@@ -8,6 +8,7 @@ class Solver:
         self.total_days = total_days 
 
     def create_random_solution(self):
+        # WIP
         sign_up_total = 0
         libraries = []
         books = []
@@ -15,7 +16,7 @@ class Solver:
             library = random.choice(list(self.libraries.keys()))
             libraries.append(library)
 
-            book = max(list(self.libraries.book_list()), key= lambda book: book.score)
+            book = max(list(self.library.book_list()), key= lambda book: book.score)
             books.append(book)
 
    
@@ -31,16 +32,8 @@ class Solver:
         libraries = solution.libraries
         return libraries[0].signup_days < self.total_days
     
-    def solve(self, ):
-
-
-
-
-"""
-Solutions:
-[L1, L2, L3], [book1.L1, book2.L1, book3.L2, book6.L3, book7.L3]
-[L4, L2, L3], [book9.L4, book10.L4, book11.L4, book3.L2, book7.L3]
-
-"""
+    def solve(self):
+        # WIP
+        return None
 
 
