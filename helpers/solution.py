@@ -27,7 +27,7 @@ class Solution:
         return self.libraries[0].signup_days < self.total_days
 
     def __le__(self, other_solution):
-        return self.calculate_total_score() <= other_solution.calculate_total_score()
+        return self.evaluate() <= other_solution.evaluate()
 
     def __str__(self):
         result = ""
