@@ -25,6 +25,7 @@ class FileReader:
 
                 library_books = list(map(int, file.readline().split()))
                 book_list = [books[book_id] for book_id in library_books]
+                book_list.sort(key=lambda book: book.score, reverse=True)
                 
                 library = Library(library_id, book_amount, book_list, signup_days, ship_per_day)
                 libraries[library_id] = library
