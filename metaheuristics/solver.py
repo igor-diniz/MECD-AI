@@ -7,7 +7,7 @@ class Solver:
         self.libraries = libraries
         self.total_days = total_days 
 
-    def create_initital_solution(self, mode: str):
+    def create_initial_solution(self, mode: str):
         remaining_days = self.total_days
         initial_solution = Solution()
 
