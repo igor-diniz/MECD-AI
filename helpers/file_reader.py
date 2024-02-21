@@ -10,7 +10,7 @@ class FileReader:
             total_libraries = int(line[1])
             total_days = int(line[2])
 
-            book_scores = file.readline().split()
+            book_scores = list(map(int, file.readline().split()))
             books = []
             for id, score in enumerate(book_scores):
                 book = Book(id, score)
