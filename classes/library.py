@@ -8,14 +8,13 @@ class Library:
         self.signed_up = False
 
     def __str__(self):
-        library_print = f"""id: {self.id}
-                            book_amount: {self.book_amount}
-                            signup_days: {self.signup_days}
-                            ship_per_day: {self.ship_per_day}
-                        """
-        print_books = []
+        books = []
         for book in self.book_list:
-            print_books.append(str(book))
-        
-        library_print += f"    book_list: {print_books}"
-        return library_print
+            books.append(str(book))
+
+        return f"""id: {self.id}
+            book_amount: {self.book_amount}
+            signup_days: {self.signup_days}
+            ship_per_day: {self.ship_per_day}
+            book_list: {books}"
+        """
