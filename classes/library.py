@@ -16,5 +16,5 @@ class Library:
             book_amount: {self.book_amount}
             signup_days: {self.signup_days}
             ship_per_day: {self.ship_per_day}
-            book_list: {books}"
+            book_list: {books}
         """
