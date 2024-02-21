@@ -7,33 +7,39 @@ class Solver:
         self.libraries = libraries
         self.total_days = total_days 
 
-    def create_random_solution(self):
-        # WIP
-        sign_up_total = 0
-        libraries = []
-        books = []
-        while sign_up_total < self.total_days:
-            library = random.choice(list(self.libraries.keys()))
-            libraries.append(library)
+    def create_initital_solution(self, mode: str):
+        remaining_days = self.total_days
+        initial_solution = Solution()
 
-            book = max(list(self.library.book_list()), key= lambda book: book.score)
-            books.append(book)
+        libraries_list = list(self.libraries.values())
+        while remaining_days > 0 and libraries_list:
+            library = self.__select_library(libraries_list, mode)
+            libraries_list.remove(library)    # To avoid select the same library again
+            initial_solution.add_library(library)
+            remaining_days -= library.signup_days
 
-   
-    def evaluate_solution(self, solution: Solution):
-        books = solution.books
-        total_score = 0
-        for book in books:
-            total_score += book.score
+            next_book_id = 0
+            n_books_scanned = 0
+            while next_book_id < len(library.book_list) and \
+                n_books_scanned <= remaining_days * library.ship_per_day:
 
-        return total_score
+                book_max_score = library.book_list[next_book_id]
+                scanned = initial_solution.add_book(book_max_score)
+                
+                if scanned:
+                    book_max_score.library_id = library.id
+                    n_books_scanned += 1
+                
+                next_book_id += 1
+        
+        return initial_solution
     
-    def is_solution_feasible(self, solution: Solution):
-        libraries = solution.libraries
-        return libraries[0].signup_days < self.total_days
-    
+    def __select_library(self, libraries_list, mode):
+        if mode.lower() == "greedy":
+            return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
+        # if not greedy, select randomly
+        return random.choice(libraries_list)
+        
     def solve(self):
         # WIP
         return None
-
-
