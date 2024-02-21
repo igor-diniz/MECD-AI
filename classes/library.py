@@ -6,6 +6,7 @@ class Library:
         self.ship_per_day = ship_per_day
         self.signup_days = signup_days
         self.signed_up = False
+        self.total_score = sum([book.score for book in self.book_list])
 
     def __str__(self):
         books = []
