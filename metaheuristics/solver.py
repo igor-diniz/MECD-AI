@@ -1,4 +1,5 @@
 from helpers.solution import Solution
+from copy import deepcopy
 import random
 
 class Solver:
@@ -9,7 +10,7 @@ class Solver:
 
     def create_initial_solution(self, mode: str):
         remaining_days = self.total_days
-        initial_solution = Solution()
+        initial_solution = deepcopy(Solution())
 
         libraries_list = list(self.libraries.values())
         while remaining_days > 0 and libraries_list:
@@ -39,6 +40,13 @@ class Solver:
             return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
         # if not greedy, select randomly
         return random.choice(libraries_list)
+    
+    def clear(self):
+        for library in self.libraries.values():
+            library.reset()
+            
+            for book in library.book_list:
+                book.reset()
         
     def solve(self):
         # WIP

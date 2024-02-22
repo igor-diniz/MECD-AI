@@ -8,6 +8,9 @@ class Library:
         self.signed_up = False
         self.total_score = sum([book.score for book in self.book_list])
 
+    def reset(self):
+        self.signed_up = False
+
     def __str__(self):
         books = []
         for book in self.book_list:
