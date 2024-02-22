@@ -10,5 +10,5 @@ class Book:
         self.scanned = False
 
     def __str__(self):
-        return f"(id: {self.id}, score: {self.score}, library_id: {self.library_id})"
+        return f"(id: {self.id}, score: {self.score}, library_id: {self.library_id}, scanned: {self.scanned})"
 
