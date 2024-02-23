@@ -21,8 +21,9 @@ class Solver:
 
             next_book_id = 0
             n_books_scanned = 0
-            while next_book_id < len(library.book_list)/4 and \
-                n_books_scanned <= remaining_days * library.ship_per_day:
+            while (next_book_id < len(library.book_list) and
+                n_books_scanned < len(library.book_list)/4 and # Get only 25% top books per library
+                n_books_scanned <= remaining_days * library.ship_per_day):
 
                 book_max_score = library.book_list[next_book_id]
                 scanned = initial_solution.add_book(book_max_score)
