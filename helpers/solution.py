@@ -1,5 +1,6 @@
 from classes.library import Library
 from classes.book import Book
+import math
 
 class Solution:
     def __init__(self, libraries: list = [], books: list = []):
@@ -23,8 +24,29 @@ class Solution:
     def evaluate(self):
         return sum(map(lambda book: book.score, self.books))
     
-    def is_feasible(self):
-        return self.libraries[0].signup_days < self.total_days
+    def exceeding_days(self, total_days):
+        days = 0
+        for library in self.libraries:
+            n_library_scanned_books = len(set([book.id for book in library.book_list]) &
+                            set([book.id for book in self.books if book.library_id == library.id]))
+            if n_library_scanned_books > 0:
+                days += library.signup_days
+                days += (n_library_scanned_books/library.ship_per_day)
+        if days <= total_days:
+            return int(0)
+        else:
+            return days - total_days
+    
+    def is_feasible(self, total_days):
+        if self.exceeding_days(total_days) > 0:
+            return False
+        else:
+            return True
+
+    def _remove_last_books(self, exceeding_days):
+        removed_books = exceeding_days/int(self.libraries[-1].ship_per_day)
+        updated_books = self.books[:-(math.ceil(removed_books))]
+        self.books = updated_books
 
     def __le__(self, other_solution):
         return self.evaluate() <= other_solution.evaluate()
