@@ -32,7 +32,8 @@ class Solver:
                     n_books_scanned += 1
                 
                 next_book_id += 1
-        
+            remaining_days -= n_books_scanned/library.ship_per_day # Consider how many books can be shipped per day
+ 
         return initial_solution
     
     def __select_library(self, libraries_list, mode):
