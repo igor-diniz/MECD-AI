@@ -21,7 +21,7 @@ class Solver:
 
             next_book_id = 0
             n_books_scanned = 0
-            while next_book_id < len(library.book_list) and \
+            while next_book_id < len(library.book_list)/4 and \
                 n_books_scanned <= remaining_days * library.ship_per_day:
 
                 book_max_score = library.book_list[next_book_id]
@@ -33,7 +33,11 @@ class Solver:
                 
                 next_book_id += 1
             remaining_days -= n_books_scanned/library.ship_per_day # Consider how many books can be shipped per day
- 
+           
+            if initial_solution.exceeding_days(self.total_days) > 0:
+                exceeding_days = initial_solution.exceeding_days(self.total_days)
+                initial_solution._remove_last_books(exceeding_days)
+        
         return initial_solution
     
     def __select_library(self, libraries_list, mode):
