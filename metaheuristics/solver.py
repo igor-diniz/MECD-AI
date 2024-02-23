@@ -80,3 +80,15 @@ class Solver:
     def solve(self):
         # WIP
         return None
+
+class GenericAlgorithm(Solver):
+    def __init__(self):
+        super().__init__()
+    
+    def generate_population(self, population_size):
+        parent_solver =  Solver(self.total_books, self.libraries, self.total_days)
+        solutions = []
+        for i in range(population_size):
+            solution = parent_solver.create_initital_solution("random")
+            solutions.append(solution)
+        return solutions
