@@ -1,6 +1,7 @@
 from helpers.solution import Solution
 from copy import deepcopy
 import random
+import numpy as np
 
 class Solver:
     def __init__(self, total_books, libraries, total_days):
@@ -11,7 +12,6 @@ class Solver:
     def create_initial_solution(self, mode: str):
         remaining_days = self.total_days
         initial_solution = deepcopy(Solution())
-
         libraries_list = list(self.libraries.values())
         while remaining_days > 0 and libraries_list:
             library = self.__select_library(libraries_list, mode)
@@ -38,12 +38,32 @@ class Solver:
         
         return initial_solution
     
-    def select_library_books(self, solution: Solution):
-        deepcopy_sol = deepcopy(solution)
-        libraries_list = deepcopy_sol.libraries
-        updated_solution = Solution()
-        remaining_days = self.total_days
+    def __select_library(self, libraries_list, mode):
+        if mode.lower() == "greedy":
+            return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
+        # if not greedy, select randomly
+        return random.choice(libraries_list)
+    
+    def get_internal_neighbour(self, solution: Solution):
+        copy_solution = deepcopy(solution)
+        
+        sol_libraries = [library for library in copy_solution.libraries]
+        n_libraries = list(range(0, len(sol_libraries)))
 
+        index_1 = random.choice(n_libraries)
+        n_libraries.remove(index_1)
+
+        index_2 = random.choice(n_libraries)
+
+        sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
+    
+        return self.select_library_books(sol_libraries)
+
+    def select_library_books(self, libraries_list: list):
+        libraries_list = deepcopy(libraries_list)
+        updated_solution = deepcopy(Solution())
+        remaining_days = self.total_days
+        
         for library in libraries_list:
             remaining_days -= library.signup_days
             next_book_id = 0
@@ -55,7 +75,7 @@ class Solver:
             len_book_list = len(library.book_list)
             while next_book_id < len_book_list and \
                 n_books_scanned <= remaining_days * library.ship_per_day:
-                book_max_score = library.book_list[next_book_id]
+                book_max_score = deepcopy(library.book_list[next_book_id])
                 scanned = updated_solution.add_book(book_max_score)
                 
                 if scanned:
@@ -63,17 +83,12 @@ class Solver:
                     n_books_scanned += 1
                 
                 next_book_id += 1
+        
+        return updated_solution
 
-    def __select_library(self, libraries_list, mode):
-        if mode.lower() == "greedy":
-            return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
-        # if not greedy, select randomly
-        return random.choice(libraries_list)
-    
     def clear(self):
         for library in self.libraries.values():
             library.reset()
-            
             for book in library.book_list:
                 book.reset()
         
