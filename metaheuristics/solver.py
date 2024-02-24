@@ -16,12 +16,15 @@ class Solver:
         while remaining_days > 0 and libraries_list:
             library = self.__select_library(libraries_list, mode)
             libraries_list.remove(library)    # To avoid select the same library again
-            initial_solution.add_library(library)
             remaining_days -= library.signup_days
+            if remaining_days > 0:
+                initial_solution.add_library(library)
 
             next_book_id = 0
             n_books_scanned = 0
-            while next_book_id < len(library.book_list) and \
+            len_book_list = len(library.book_list)
+
+            while next_book_id < len_book_list and \
                 n_books_scanned <= remaining_days * library.ship_per_day:
 
                 book_max_score = library.book_list[next_book_id]
