@@ -38,6 +38,32 @@ class Solver:
         
         return initial_solution
     
+    def select_library_books(self, solution: Solution):
+        deepcopy_sol = deepcopy(solution)
+        libraries_list = deepcopy_sol.libraries
+        updated_solution = Solution()
+        remaining_days = self.total_days
+
+        for library in libraries_list:
+            remaining_days -= library.signup_days
+            next_book_id = 0
+            n_books_scanned = 0
+
+            if remaining_days > 0:
+                updated_solution.add_library(library)
+            
+            len_book_list = len(library.book_list)
+            while next_book_id < len_book_list and \
+                n_books_scanned <= remaining_days * library.ship_per_day:
+                book_max_score = library.book_list[next_book_id]
+                scanned = updated_solution.add_book(book_max_score)
+                
+                if scanned:
+                    book_max_score.library_id = library.id
+                    n_books_scanned += 1
+                
+                next_book_id += 1
+
     def __select_library(self, libraries_list, mode):
         if mode.lower() == "greedy":
             return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
