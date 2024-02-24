@@ -43,21 +43,38 @@ class Solver:
             return max(libraries_list, key=lambda library: (library.total_score * library.ship_per_day) / library.signup_days)
         # if not greedy, select randomly
         return random.choice(libraries_list)
-    
-    def get_internal_neighbour(self, solution: Solution):
+ 
+    def get_internal_neighbour(self, solution: Solution, mode: str):
         copy_solution = deepcopy(solution)
-        
-        sol_libraries = [library for library in copy_solution.libraries]
+        sol_libraries = deepcopy(copy_solution.libraries)
         n_libraries = list(range(0, len(sol_libraries)))
-
         index_1 = random.choice(n_libraries)
-        n_libraries.remove(index_1)
 
-        index_2 = random.choice(n_libraries)
+        if mode.lower() == "swap":    
+            n_libraries.remove(index_1)
+            index_2 = random.choice(n_libraries)
+            sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
+        else:
+            sol_libraries.remove(sol_libraries[index_1])
 
-        sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
-    
         return self.select_library_books(sol_libraries)
+    
+    def get_external_neighbour(self, solution: Solution):
+        
+        copy_solution = deepcopy(solution)
+
+        internal_libraries = deepcopy(copy_solution.libraries)
+        n_libraries_internal = list(range(0, len(internal_libraries)))
+        
+        external_libraries = [library for library in self.libraries.values() if library not in internal_libraries]
+        n_libraries_external = list(range(0, len(external_libraries)))
+
+        index_1 = random.choice(n_libraries_internal)
+        index_2 = random.choice(n_libraries_external)
+
+        internal_libraries[index_1] = external_libraries[index_2]
+           
+        return self.select_library_books(internal_libraries)  
 
     def select_library_books(self, libraries_list: list):
         libraries_list = deepcopy(libraries_list)
@@ -75,7 +92,7 @@ class Solver:
             len_book_list = len(library.book_list)
             while next_book_id < len_book_list and \
                 n_books_scanned <= remaining_days * library.ship_per_day:
-                book_max_score = deepcopy(library.book_list[next_book_id])
+                book_max_score = library.book_list[next_book_id]
                 scanned = updated_solution.add_book(book_max_score)
                 
                 if scanned:

@@ -11,7 +11,7 @@ def solve(file_name):
     random_initial_solution = parent_solver.create_initial_solution("random")
     print(random_initial_solution)
     parent_solver.clear()
-    new_neighbor = parent_solver.get_internal_neighbour(random_initial_solution)
+    new_neighbor = parent_solver.get_internal_neighbour(random_initial_solution,"remove")
     print("Neighbor Solution")
     print(new_neighbor)
     
@@ -23,4 +23,4 @@ def solve(file_name):
     #print(greedy_initial_solution)
 
 if __name__ == "__main__":
-    solve("data/a_example.in")
+    solve("data/a_example_2.in")
