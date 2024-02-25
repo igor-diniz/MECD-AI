@@ -10,13 +10,17 @@ def solve(file_name):
     print("Random Initial Solution")
     random_initial_solution = parent_solver.create_initial_solution("random")
     print(random_initial_solution)
-    
-    print()
     parent_solver.clear()
-
-    print("Greedy Initial Solution")
-    greedy_initial_solution = parent_solver.create_initial_solution("greedy")
-    print(greedy_initial_solution)
+    new_neighbor = parent_solver.get_internal_neighbour(random_initial_solution,"remove")
+    print("Neighbor Solution")
+    print(new_neighbor)
+    
+    #print()
+    
+#
+    #print("Greedy Initial Solution")
+    #greedy_initial_solution = parent_solver.create_initial_solution("greedy")
+    #print(greedy_initial_solution)
 
 if __name__ == "__main__":
-    solve("data/a_example.in")
+    solve("data/a_example_2.in")
