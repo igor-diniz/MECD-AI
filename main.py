@@ -7,11 +7,13 @@ def solve(file_name):
     
     ga =  GeneticAlgorithm(total_books, libraries, total_days)
     ga.solve(
-        population_size=25,
-        n_generations=5,
+        population_size=50,
+        n_generations=10,
         mutate_mode="random",
-        crossover_mode="mid"
+        crossover_mode="mid",
+        results_csv="analysis/ga/ga_results.csv",
+        filename=file_name
     )
 
 if __name__ == "__main__":
-    solve("data/a_example_2.in")
+    solve("data/b_read_on.in")

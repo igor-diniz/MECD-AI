@@ -1,10 +1,12 @@
 from metaheuristics.solver import Solver
 from helpers.solution import Solution
+from helpers.utils import results_to_csv
 from copy import deepcopy
 import numpy as np
 import math
 import random
 import time
+import csv
 
 class GeneticAlgorithm(Solver):
     def __init__(self, total_books, libraries, total_days):
@@ -13,24 +15,7 @@ class GeneticAlgorithm(Solver):
         self.libraries = libraries
         self.total_days = total_days
     
-    def generate_population(self, population_size: int):
-        # Generate population with random individuals
-        population = []
-        copy_solver = deepcopy(self)
-        for i in range(population_size):
-            copy_solver.clear()
-            copy_solver = GeneticAlgorithm(self.total_books,
-                                           self.libraries,
-                                           self.total_days)
-            individual = copy_solver.create_initial_solution("random")
-            population.append(individual)
-        return Population(len(population),
-                          population,
-                          self.total_books,
-                          self.libraries,
-                          self.total_days)
-    
-    def solve(self, population_size, n_generations, mutate_mode, crossover_mode, log=False):
+    def solve(self, population_size, n_generations, mutate_mode, crossover_mode, log=False, results_csv=None, filename=None):
         start_time = time.time()
         print("Generating population...")
 
@@ -46,7 +31,7 @@ class GeneticAlgorithm(Solver):
 
         while(num_iterations > 0):
             generation += 1
-            print(f"Working on generation {generation}...")
+            print(f"-----\nWorking on generation {generation}...")
             tournment_winner_sol = population.tournament_select(4)
             roulette_winner_sol = population.roulette_select()
             
@@ -75,13 +60,38 @@ class GeneticAlgorithm(Solver):
                     print(population)
             num_iterations -= 1
             print(f"End of generation {generation}!")
+
             
-        print(f"  Final solution: {fittest}, score: {best_score}")
+        print(f"-----\n  Final solution: {fittest}, score: {best_score}")
         print(f"  Found on generation {fittest_generation}")
         
         end_time = time.time()
-        print(f"Elapsed time: {end_time - start_time} seconds")
+        print(f"-----\nElapsed time: {end_time - start_time} seconds")
+
+        # Write results to csv, if csv file is provided
+        if results_csv and filename:
+            results_to_csv(results_csv, filename, population_size, n_generations,
+                                mutate_mode, crossover_mode, best_score, fittest.__str__(), end_time)
+            print(f"Result written to {results_csv}.")
+        
         return fittest
+    
+    def generate_population(self, population_size: int):
+        # Generate population with random individuals
+        population = []
+        copy_solver = deepcopy(self)
+        for i in range(population_size):
+            copy_solver.clear()
+            copy_solver = GeneticAlgorithm(self.total_books,
+                                           self.libraries,
+                                           self.total_days)
+            individual = copy_solver.create_initial_solution("random")
+            population.append(individual)
+        return Population(len(population),
+                          population,
+                          self.total_books,
+                          self.libraries,
+                          self.total_days)
 
 class Population(GeneticAlgorithm):
     def __init__(self, size: int, individuals: list, total_books, libraries, total_days):
