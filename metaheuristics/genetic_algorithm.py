@@ -19,15 +19,21 @@ class GeneticAlgorithm(Solver):
         copy_solver = deepcopy(self)
         for i in range(population_size):
             copy_solver.clear()
-            copy_solver = GeneticAlgorithm(self.total_books, self.libraries, self.total_days)
+            copy_solver = GeneticAlgorithm(self.total_books,
+                                           self.libraries,
+                                           self.total_days)
             individual = copy_solver.create_initial_solution("random")
             population.append(individual)
-        return Population(len(population), population, self.total_books, self.libraries, self.total_days)
+        return Population(len(population),
+                          population,
+                          self.total_books,
+                          self.libraries,
+                          self.total_days)
     
     def solve(self, population_size, n_generations, mutate_mode, crossover_mode, log=False):
         start_time = time.time()
         print("Generating population...")
-        
+
         # Generate first population (generation 0)
         population = self.generate_population(population_size)
         print(f"Population with {population_size} individuals generated!")
