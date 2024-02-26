@@ -6,7 +6,7 @@ def solve(file_name):
     file_reader = FileReader()
     total_books, libraries, total_days = file_reader.read(file_name)
     
-    tabu_solver =  TabuSearchSolver(total_books, libraries, total_days, tabu_tenure=10, max_iterations=1000)
+    tabu_solver =  TabuSearchSolver(total_books, libraries, total_days)
 
     print("Random Initial Solution")
     random_initial_solution = tabu_solver.create_initial_solution("random")
@@ -15,7 +15,7 @@ def solve(file_name):
     print()
 
     print("Tabu Search Solution")
-    best_solution = tabu_solver.solve(random_initial_solution)
+    best_solution = tabu_solver.solve(random_initial_solution, tabu_tenure=10, max_iterations=100, log=True)
     print(best_solution)
 
 
