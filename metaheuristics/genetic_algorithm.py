@@ -27,6 +27,8 @@ class GeneticAlgorithm(Solver):
     def solve(self, population_size, n_generations, mutate_mode, crossover_mode, log=False):
         start_time = time.time()
         print("Generating population...")
+        
+        # Generate first population (generation 0)
         population = self.generate_population(population_size)
         print(f"Population with {population_size} individuals generated!")
         fittest = population.individuals[0]
