@@ -28,6 +28,9 @@ class Solution:
 
     def __le__(self, other_solution):
         return self.evaluate() <= other_solution.evaluate()
+    
+    def __lt__(self, other_solution):
+        return self.evaluate() < other_solution.evaluate()
 
     def __str__(self):
         result = ""
