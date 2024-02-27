@@ -75,7 +75,7 @@ class Solver:
 
         internal_libraries[index_1] = external_libraries[index_2]
            
-        return deepcopy(self.select_library_books(internal_libraries))  
+        return deepcopy(self.select_library_books(internal_libraries))
 
     def select_library_books(self, libraries_list: list):
         libraries_list = deepcopy(libraries_list)
