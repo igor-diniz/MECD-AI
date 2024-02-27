@@ -12,7 +12,8 @@ class Solver:
     def create_initial_solution(self, mode: str):
         remaining_days = self.total_days
         initial_solution = deepcopy(Solution())
-        libraries_list = list(self.libraries.values())
+        libraries_list = deepcopy(list(self.libraries.values()))
+        
         while remaining_days > 0 and libraries_list:
             library = self.__select_library(libraries_list, mode)
             libraries_list.remove(library)    # To avoid select the same library again
@@ -25,7 +26,7 @@ class Solver:
             len_book_list = len(library.book_list)
 
             while next_book_id < len_book_list and \
-                n_books_scanned <= remaining_days * library.ship_per_day:
+                n_books_scanned < remaining_days * library.ship_per_day:
 
                 book_max_score = library.book_list[next_book_id]
                 scanned = initial_solution.add_book(book_max_score)
@@ -57,7 +58,7 @@ class Solver:
         else:
             sol_libraries.remove(sol_libraries[index_1])
 
-        return self.select_library_books(sol_libraries)
+        return deepcopy(self.select_library_books(sol_libraries))
     
     def get_external_neighbour(self, solution: Solution):
         
@@ -74,14 +75,16 @@ class Solver:
 
         internal_libraries[index_1] = external_libraries[index_2]
            
-        return self.select_library_books(internal_libraries)  
+        return deepcopy(self.select_library_books(internal_libraries))  
 
     def select_library_books(self, libraries_list: list):
         libraries_list = deepcopy(libraries_list)
         updated_solution = deepcopy(Solution())
+        libraries_reset = deepcopy(self.libraries)
         remaining_days = self.total_days
         
         for library in libraries_list:
+            library = libraries_reset[library.id]
             remaining_days -= library.signup_days
             next_book_id = 0
             n_books_scanned = 0
@@ -91,7 +94,7 @@ class Solver:
             
             len_book_list = len(library.book_list)
             while next_book_id < len_book_list and \
-                n_books_scanned <= remaining_days * library.ship_per_day:
+                n_books_scanned < remaining_days * library.ship_per_day:
                 book_max_score = library.book_list[next_book_id]
                 scanned = updated_solution.add_book(book_max_score)
                 
