@@ -8,11 +8,11 @@ def solve(file_name):
     
     ga = GeneticAlgorithm(total_books, libraries, total_days)
     ga.solve(
-        population_size=4,
-        n_generations=2,
+        population_size=25,
+        n_generations=10,
         mutate_mode="swap",
         crossover_mode="mid"
     )
 
 if __name__ == "__main__":
-    solve("data/a_example_2.in")
+    solve("data/a_example_3.in")
