@@ -15,7 +15,8 @@ class GeneticAlgorithm(Solver):
         self.libraries = libraries
         self.total_days = total_days
     
-    def solve(self, population_size, n_generations, mutate_mode, crossover_mode, log=False, results_csv=None, filename=None):
+    def solve(self, population_size: int,
+              n_generations: int, mutate_mode: str, crossover_mode: str, log=False, save_log = True, results_csv=None, filename=None):
         start_time = time.time()
         print("Generating population...")
 
@@ -28,6 +29,10 @@ class GeneticAlgorithm(Solver):
 
         num_iterations = n_generations
         generation = 0
+
+        if save_log:
+            generations_log = []
+            generations_log.append([individual.evaluate() for individual in population.individuals])
 
         while(num_iterations > 0):
             generation += 1
@@ -60,20 +65,25 @@ class GeneticAlgorithm(Solver):
                     print(population)
             num_iterations -= 1
             print(f"End of generation {generation}!")
-
+            
+            if save_log:
+                generations_log.append([individual.evaluate() for individual in population.individuals])
             
         print(f"-----\n  Final solution: {fittest}, score: {best_score}")
         print(f"  Found on generation {fittest_generation}")
         
         end_time = time.time()
-        print(f"-----\nElapsed time: {end_time - start_time} seconds")
+        elapsed_time = end_time - start_time
+        print(f"-----\nElapsed time: {elapsed_time} seconds")
 
         # Write results to csv, if csv file is provided
         if results_csv and filename:
-            results_to_csv(results_csv, filename, population_size, n_generations,
-                                mutate_mode, crossover_mode, best_score, fittest.__str__(), end_time)
+            results_to_csv(results_csv, filename, population_size, (n_generations, fittest_generation),
+                                mutate_mode, crossover_mode, best_score, fittest.__str__(), elapsed_time)
             print(f"Result written to {results_csv}.")
         
+        if save_log:
+            print(f"Generations log: {generations_log}")
         return fittest
     
     def generate_population(self, population_size: int):
