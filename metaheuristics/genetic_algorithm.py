@@ -50,7 +50,7 @@ class GeneticAlgorithm(Solver):
             
             # Checking the greatest fit among the current population
             greatest_fit = population.get_greatest_fit()
-            if fittest.__le__(greatest_fit):
+            if fittest.__lt__(greatest_fit):
                 fittest = greatest_fit
                 best_score = greatest_fit.evaluate()
                 fittest_generation = generation
