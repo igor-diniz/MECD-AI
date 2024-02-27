@@ -16,7 +16,7 @@ class GeneticAlgorithm(Solver):
         self.total_days = total_days
     
     def solve(self, population_size: int,
-              n_generations: int, mutate_mode: str, crossover_mode: str, log=False, save_log = True, results_csv=None, filename=None):
+              n_generations: int, mutate_mode: str, crossover_mode: str, log=False, save_log = False, results_csv=None, filename=None):
         start_time = time.time()
         print("Generating population...")
 
