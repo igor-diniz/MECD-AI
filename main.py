@@ -12,16 +12,25 @@ def solve(file_name, population_size, n_generations, mutate_mode, crossover_mode
         n_generations=n_generations,
         mutate_mode=mutate_mode,
         crossover_mode=crossover_mode,
-        save_log=True
+        save_log=True,
+        results_csv="analysis/ga/results.csv",
+        filename=file_name
     )
 
 if __name__ == "__main__":
-   
-    filename = "data/a_example.in"
-    params = {"population_size": 5,
-              "n_generations": 3,
+    files = [#"data/a_example_2.in",
+             "data/b_read_on.in",
+             "data/c_incunabula.in",
+             "data/d_tough_choices.in",
+             "data/e_so_many_books.in",
+             "data/f_libraries_of_the_world.in"
+             ]
+    params = {"population_size": 20,
+              "n_generations": 10,
               "mutate_modes": ["deletion", "swap", "addition"],
               "crossover_modes": ["mid", "random"]}
-    grid_search_ga(solve,
-                   params,
-                   filename)
+
+    for filename in files:
+        grid_search_ga(solve,
+                params,
+                 filename)
