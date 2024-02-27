@@ -15,7 +15,7 @@ def solve(file_name):
     print()
 
     print("Tabu Search Solution")
-    best_solution = tabu_solver.solve(random_initial_solution, tabu_tenure=10, n_neighbours=10, max_iterations=100, log=True)
+    best_solution = tabu_solver.solve(random_initial_solution, tabu_tenure=10, n_neighbours=50, max_iterations=100, log=True)
     print(best_solution)
 
 

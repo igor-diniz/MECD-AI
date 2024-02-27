@@ -17,54 +17,70 @@ class TabuSearchSolver(Solver):
     def append_n_external_neighbours(self, solution: Solution, score_neighbour_swap: heapq, n: int):
         neighbourhood_swaps = set()
         n_libraries = len(self.libraries)
+        n_sol_libraries = len(solution.libraries)
+        sol_libraries_ids = list(map(lambda library: library.id, solution.libraries))
+        n_max_neighbours = (n_libraries - n_sol_libraries) * n_sol_libraries
 
-        while len(neighbourhood_swaps) < min(n, n_libraries * (n_libraries - 1) / 2):
+        while len(neighbourhood_swaps) < min(n, n_max_neighbours):
             sol_libraries = deepcopy(solution.libraries)
-            sol_libs_indexes = np.arange(len(sol_libraries))
-            index_1 = np.random.choice(sol_libs_indexes)
-            lib_id1 = sol_libraries[index_1].id 
+            sol_libraries_indexes = list(range(len(sol_libraries)))
             
-            external_libraries = deepcopy(self.libraries)
-            external_libraries.pop(sol_libraries[index_1].id)
-            external_lib = np.random.choice(list(external_libraries.values()))
-            lib_id2 = external_lib.id
+            not_solution_libraries = [library for library in self.libraries.values() if library.id not in sol_libraries_ids]
+            not_solution_libraries_indexes = list(range(len(not_solution_libraries)))
 
-            sol_libraries[index_1] = external_lib
+            index_1 = random.choice(sol_libraries_indexes)
+            index_2 = random.choice(not_solution_libraries_indexes)
 
-            neighbour_sol = deepcopy(super().select_library_books(sol_libraries))
+            lib1_id = sol_libraries[index_1].id
+            lib2_id = not_solution_libraries[index_2].id
+
+            sol_libraries[index_1] = not_solution_libraries[index_2]
+            
+            neighbour_sol = deepcopy(self.select_library_books(sol_libraries))
             negative_score = -neighbour_sol.evaluate()
-            swap_done = (lib_id1, lib_id2)
+            swap_done = (lib1_id, lib2_id)
+            
+            length_neighbours_before = len(neighbourhood_swaps)
             neighbourhood_swaps.add(swap_done)
-            print(len(score_neighbour_swap))
 
-            # add neighbour in the priority queue in the correct place
-            heapq.heappush(score_neighbour_swap, (negative_score, neighbour_sol, swap_done))
+            if len(neighbourhood_swaps) > length_neighbours_before:
+                # add neighbour in the priority queue in the correct place
+                heapq.heappush(score_neighbour_swap, (negative_score, neighbour_sol, swap_done))
+                #print(swap_done)
+                #print(neighbour_sol)
 
     
     def append_n_internal_neighbours(self, solution: Solution, score_neighbour_swap: heapq, n: int):
         neighbourhood_swaps = set()
-        n_libraries = len(self.libraries)
+        n_sol_libraries = len(solution.libraries)
+        n_max_neighbours = n_sol_libraries * (n_sol_libraries - 1)
 
-        while len(neighbourhood_swaps) < min(2 * n, n_libraries * (n_libraries - 1)):
+        while len(neighbourhood_swaps) < min(2 * n, n_max_neighbours):
             sol_libraries = deepcopy(solution.libraries)
-            sol_libs_indexes = np.arange(len(sol_libraries))
-            index_1 = np.random.choice(sol_libs_indexes)
-            lib_id1 = sol_libraries[index_1].id
+            sol_libraries_indexes = list(range(len(sol_libraries)))
 
-            sol_libs_indexes = np.delete(sol_libs_indexes, index_1)
-            index_2 = np.random.choice(sol_libs_indexes)
-            lib_id2 = sol_libraries[index_2].id
+            index_1 = random.choice(sol_libraries_indexes)
+            sol_libraries_indexes.remove(index_1)
+            index_2 = random.choice(sol_libraries_indexes)
+
+            lib1_id = sol_libraries[index_1].id
+            lib2_id = sol_libraries[index_2].id
+
             sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
-
-            neighbour_sol = deepcopy(super().select_library_books(sol_libraries))
+            
+            neighbour_sol = deepcopy(self.select_library_books(sol_libraries))
             negative_score = -neighbour_sol.evaluate()
-            swap_done = (lib_id1, lib_id2)
+            swap_done = (lib1_id, lib2_id)
+            
+            length_neighbours_before = len(neighbourhood_swaps)
             neighbourhood_swaps.add(swap_done)
             neighbourhood_swaps.add((swap_done[1], swap_done[0]))
-            print(len(score_neighbour_swap))
 
-            # add neighbour in the priority queue in the correct place
-            heapq.heappush(score_neighbour_swap, (negative_score, neighbour_sol, swap_done))
+            if len(neighbourhood_swaps) > length_neighbours_before:
+                # add neighbour in the priority queue in the correct place
+                heapq.heappush(score_neighbour_swap, (negative_score, neighbour_sol, swap_done))
+                #print(swap_done)
+                #print(neighbour_sol)
 
 
     def append_all_external_neighbours(self, curr_solution: Solution, score_neighbour_swap: heapq):
@@ -109,7 +125,7 @@ class TabuSearchSolver(Solver):
         score_neighbour_swap = []   # list of tuples like (diff_score, neighbour_sol, swap_done)
         heapq.heapify(score_neighbour_swap)     # priority queue based on the diff_score
         
-        if n is None:
+        if n is None or n == -1:
             self.append_all_external_neighbours(curr_solution, score_neighbour_swap)
             self.append_all_internal_neighbours(curr_solution, score_neighbour_swap)
 
