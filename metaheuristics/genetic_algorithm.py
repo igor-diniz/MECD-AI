@@ -6,7 +6,7 @@ import numpy as np
 import math
 import random
 import time
-import csv
+import tracemalloc
 
 class GeneticAlgorithm(Solver):
     def __init__(self, total_books, libraries, total_days):
@@ -16,8 +16,18 @@ class GeneticAlgorithm(Solver):
         self.total_days = total_days
     
     def solve(self, population_size: int,
-              n_generations: int, mutate_mode: str, crossover_mode: str, log=False, save_log = False, results_csv=None, filename=None):
+              n_generations: int,
+              mutate_mode: str,
+              crossover_mode: str,
+              log=False,
+              evolution_log= False,
+              results_csv=None,
+              filename=None):
+        
         start_time = time.time()
+        tracemalloc.start()
+        tracemalloc.clear_traces()
+
         print("Generating population...")
 
         # Generate first population (generation 0)
@@ -30,7 +40,7 @@ class GeneticAlgorithm(Solver):
         num_iterations = n_generations
         generation = 0
 
-        if save_log:
+        if evolution_log:
             generations_log = []
             generations_log.append([individual.evaluate() for individual in population.individuals])
 
@@ -66,7 +76,7 @@ class GeneticAlgorithm(Solver):
             num_iterations -= 1
             print(f"End of generation {generation}!")
             
-            if save_log:
+            if evolution_log:
                 generations_log.append([individual.evaluate() for individual in population.individuals])
             
         print(f"-----\n  Final solution: {fittest}, score: {best_score}")
@@ -74,16 +84,20 @@ class GeneticAlgorithm(Solver):
         
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"-----\nElapsed time: {elapsed_time} seconds")
+        _, peak_memory = tracemalloc.get_traced_memory()
+        print(peak_memory)
+        tracemalloc.stop()
+        print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
 
         # Write results to csv, if csv file is provided
         if results_csv and filename:
             results_to_csv(results_csv, filename, population_size, (n_generations, fittest_generation),
-                                mutate_mode, crossover_mode, best_score, fittest.__str__(), elapsed_time)
+                                mutate_mode, crossover_mode, best_score, fittest.__str__(), elapsed_time, peak_memory)
             print(f"Result written to {results_csv}.")
         
-        if save_log:
+        if evolution_log:
             print(f"Generations log: {generations_log}")
+        
         return fittest
     
     def generate_population(self, population_size: int):
