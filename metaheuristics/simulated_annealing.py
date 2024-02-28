@@ -59,8 +59,9 @@ class SimulatedAnnealing(Solver):
                 if delta > 0 or np.exp(-delta / temperature) > random.random():
                     solution = neighbor_solution
                     score = neighbor_score
+                    self.curr_sol_history.append(score)
+
                     if score > best_score:
-                        iteration = 0
                         best_solution = deepcopy(solution)
                         best_score = score
                         if log:
@@ -73,7 +74,7 @@ class SimulatedAnnealing(Solver):
             tracemalloc.stop()
 
             if results_csv and filename:
-                results_to_csv(results_csv, filename, best_solution, score, elapsed_time, peak_memory)
+                results_to_csv(results_csv, self.curr_sol_history, filename, best_score, elapsed_time, peak_memory, T, cooling_schedule, num_iterations)
                 print(f"Result written to {results_csv}.")
 
             print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")

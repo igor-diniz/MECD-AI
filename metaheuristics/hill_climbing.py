@@ -47,8 +47,8 @@ class HillClimbingSolver(Solver):
             iteration += 1
             neighbors_solution =  self.select_neighbor_generator(best_solution)
             neighbor_score = self.evaluate_solution(neighbors_solution)
+            
             if neighbor_score > actual_score:
-                #iteration = 0
                 best_solution = neighbors_solution
                 actual_score = neighbor_score
                 self.curr_sol_history.append(actual_score)
