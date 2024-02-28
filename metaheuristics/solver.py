@@ -48,13 +48,14 @@ class Solver:
     def get_internal_neighbour(self, solution: Solution, mode: str):
         copy_solution = deepcopy(solution)
         sol_libraries = deepcopy(copy_solution.libraries)
-        n_libraries = list(range(0, len(sol_libraries)))
+        n_libraries = list(range(len(sol_libraries)))
         index_1 = random.choice(n_libraries)
 
-        if mode.lower() == "swap":    
+        if mode.lower() == "swap":
             n_libraries.remove(index_1)
-            index_2 = random.choice(n_libraries)
-            sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
+            if n_libraries:  # Check if there are indices left after removing index_1
+                index_2 = random.choice(n_libraries)
+                sol_libraries[index_1], sol_libraries[index_2] = sol_libraries[index_2], sol_libraries[index_1]
         else:
             sol_libraries.remove(sol_libraries[index_1])
 
