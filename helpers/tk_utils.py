@@ -4,12 +4,13 @@ from io import StringIO
 from helpers.file_reader import FileReader
 from metaheuristics.genetic_algorithm import GeneticAlgorithm
 from metaheuristics.tabu_search import TabuSearchSolver
-#from metaheuristics.hill_climbing import HillClimbingSolver
+from metaheuristics.hill_climbing import HillClimbingSolver
+from metaheuristics.simulated_annealing import SimulatedAnnealing
 import sys
 import threading
 
 window = Tk()
-window.geometry("800x500")
+window.geometry("1200x500")
 window.title("Book Scanning Optimization")
 
 #region ----- WELCOME SCREEN
@@ -34,7 +35,7 @@ def create_welcome_screen():
 
     compare_button = Button(window,
                             text="Compare algorithms performances",
-                            command=lambda: create_choose_algorithm_screen("compare"),
+                            command=lambda: create_compare_screen(),
                             font=("Arial", 11))
     compare_button.pack(padx=20, pady=10)
 
@@ -60,7 +61,7 @@ def create_choose_algorithm_screen():
 
     simulated_annealing_button = Button(window,
                             text="Simulated Annealing",
-                            command=lambda: create_ga_insert_params_screen("compare"),
+                            command=lambda: create_sa_insert_params_screen(),
                             font=("Arial", 12))
     simulated_annealing_button.pack(padx=20, pady=10)
 
@@ -91,7 +92,7 @@ def create_ts_insert_params_screen():
     file_label = Label(window, text="Dataset:", font=("Arial", 12))
     file_label.pack(padx=20, pady=5)
     file = StringVar()
-    file.set("a_example_3.in")
+    file.set("a_example.in")
     file_menu = OptionMenu(window,
                            file,
                            "a_example.in",
@@ -307,7 +308,6 @@ def run_ga(file, pop_size_entry, generations_n_entry):
 
     #endregion
 #endregion
-
 #region ----- HILL CLIMBING 
     #region --- INSERT HILL CLIMBING PARAMS SCREEN
 def create_hc_insert_params_screen():
@@ -322,7 +322,110 @@ def create_hc_insert_params_screen():
     file_label = Label(window, text="Dataset:", font=("Arial", 12))
     file_label.pack(padx=20, pady=5)
     file = StringVar()
-    file.set("a_example_3.in")
+    file.set("a_example.in")
+    file_menu = OptionMenu(window,
+                           file,
+                           "a_example.in",
+                           "a_example_2.in",
+                           "a_example_3.in",
+                           "a_example_4.in",
+                           "b_read_on",
+                           "c_incunabula.in",
+                           "d_tough_choices.in",
+                           "e_so_many_books.in",
+                           "f_libraries_of_the_world")
+    file_menu.pack()
+
+    init_sol_label = Label(window, text="Initial solution generation mode (TO BE REVIEWED WITH GROUP)",
+                         font=("Arial", 12))
+    init_sol_label.pack(padx=20, pady=10)
+    init_sol_var = StringVar()
+    init_sol_var.set("Choose mode")
+    init_sol_menu = OptionMenu(window, init_sol_var, "Random", "Greedy")
+    init_sol_menu.pack()
+    
+    max_iterations_label = Label(window, text="Maximum number of iterations:", font=("Arial", 12))
+    max_iterations_label.pack(padx=20, pady=10)
+
+    max_iterations_n_entry = Entry(window)
+    max_iterations_n_entry.pack()
+    
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file, init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button.pack(padx=20, pady=20)
+
+    #endregion
+    #region ----- HILL CLIMBING RUNNING SCREEN
+
+def run_hc(file, init_sol_var, max_iterations_n_entry):
+    for widget in window.winfo_children():
+        widget.destroy()
+    
+    file_reader = FileReader()
+    total_books, libraries, total_days = file_reader.read(f"data/{file.get()}")
+
+    original_stdout = sys.stdout  # Save original stdout for later restoration
+    output_buffer = StringIO()  # Create a buffer to capture output
+    sys.stdout = output_buffer  # Redirect stdout to the buffer
+
+    frame_title = Label(window, text="Hill Climbing", font=("Arial", 18))
+    frame_title.pack(padx=20, pady=10)
+    frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
+    frame_subtitle.pack(padx=20, pady=2)
+
+    button_frame = Frame(window)
+    button_frame.pack(side="top", anchor="e")  # Align the frame to the top-right corner
+
+    # Back to Main Page button
+    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_main_page())
+    back_button.pack(padx=10, pady=0)
+
+    scrollbar = Scrollbar(window, orient=VERTICAL)
+    scrollbar.pack(side="right", fill="y")  # Pack scrollbar
+
+    text_area = Text(window, wrap="word")
+    text_area.configure(yscrollcommand=scrollbar.set)  # Enable vertical scrolling
+    text_area.pack(padx=20, pady=10, fill="both", expand=True)  # Adjust packing options
+    
+    scrollbar.config(command=text_area.yview)  # Configure the scrollbar to control the text area's yview
+    
+    hc = HillClimbingSolver(total_books, libraries, total_days)
+    #initial_solution = hc.create_initial_solution(mode=init_sol_var)
+    
+    try: 
+        hc.solve(
+            initial_solution_random = hc.initial_solution_random,
+            initial_solution_greedy = hc.initial_solution_greedy,
+            internal_neighbors_generator = hc.internal_neighbors_generator,
+            external_neighbors_generator = hc.external_neighbors_generator,
+            #initial_solution=initial_solution,
+            num_iterations=int(max_iterations_n_entry),
+            log=True)
+
+    finally:
+        frame_subtitle.config(text="Finished execution!")
+        sys.stdout = original_stdout  # Restore original stdout
+
+    captured_output = output_buffer.getvalue()  # Get the captured output
+    text_area.insert(END, captured_output)
+    text_area.see(END)
+
+    #endregion
+#endregion
+#region ----- SIMULATED ANNEALING 
+    #region --- INSERT SIMULATED ANNEALING PARAMS SCREEN
+def create_sa_insert_params_screen():
+    for widget in window.winfo_children():
+        widget.destroy()
+
+    frame_title = Label(window, text="Book Scanning Optimization", font=("Arial", 18))
+    frame_title.pack(padx=20, pady=10)
+    frame_subtitle = Label(window, text="Simulated Annealing", font=("Arial", 16))
+    frame_subtitle.pack(padx=20, pady=2)
+
+    file_label = Label(window, text="Dataset:", font=("Arial", 12))
+    file_label.pack(padx=20, pady=5)
+    file = StringVar()
+    file.set("a_example.in")
     file_menu = OptionMenu(window,
                            file,
                            "a_example.in",
@@ -350,13 +453,13 @@ def create_hc_insert_params_screen():
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file, init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_sa(file, init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
-    #region ----- TABU SEARCH RUNNING SCREEN
+    #region ----- HILL CLIMBING RUNNING SCREEN
 
-def run_hc(file, init_sol_var, max_iterations_n_entry):
+def run_sa(file, init_sol_var, max_iterations_n_entry):
     for widget in window.winfo_children():
         widget.destroy()
     
@@ -367,7 +470,7 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     output_buffer = StringIO()  # Create a buffer to capture output
     sys.stdout = output_buffer  # Redirect stdout to the buffer
 
-    frame_title = Label(window, text="Tabu Search", font=("Arial", 18))
+    frame_title = Label(window, text="Simulated Annealing", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
@@ -388,17 +491,16 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     
     scrollbar.config(command=text_area.yview)  # Configure the scrollbar to control the text area's yview
     
-    ts = TabuSearchSolver(total_books, libraries, total_days)
-    initial_solution = ts.create_initial_solution(mode=init_sol_var)
-        
+    sa = SimulatedAnnealing(total_books, libraries, total_days)
+    initial_solution = sa.create_initial_solution(mode=init_sol_var)
+    
     try: 
-        ts.solve(
-        initial_solution=initial_solution,
-        tabu_tenure=int(tabu_tenure_entry),
-        n_neighbours=int(neighbours_n_entry),
-        max_iterations=int(max_iterations_n_entry),
-        log=True
-        )
+        sa.solve(
+            initial_solution=initial_solution,
+            internal_neighbors_generator = sa.internal_neighbors_generator,
+            external_neighbors_generator = sa.external_neighbors_generator,
+            num_iterations=int(max_iterations_n_entry),
+            log=True)
 
     finally:
         frame_subtitle.config(text="Finished execution!")
@@ -409,14 +511,44 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     text_area.see(END)
 
     #endregion
-#endregion
-
+#endregion    
 #region ----- COMPARE ALGORITHMS SCREEN
 def create_compare_screen():
-    # Create labels and buttons
-    compare_label = Label(window, text="Compare algorithms")
-    compare_label.pack()
+    for widget in window.winfo_children():
+        widget.destroy()
+    # Create labels and entry fields for each algorithm's parameters
+    algorithms_params = {"Hill Climbing": [],
+                         "Simulated Annealing": [],
+                         "Tabu Search": [],
+                         "Genetic Algorithm": [],
+                         }
+    algorithms = ["Genetic Algorithm", "Tabu Search", "Hill Climbing", "Simulated Annealing"]
+    parameters = ["Population size", "Number of generations", "Tabu tenure", "Number of neighbours",
+                  "Maximum number of iterations"]
 
+    frames = []  # List to hold the frames for each column
+
+    # Create frames for each column
+    for _ in range(4):
+        frame = Frame(window, padx=10, pady=10)
+        frame.pack(side=LEFT, padx=10, pady=10, fill=Y)
+        frames.append(frame)
+
+    # Add labels and entry fields to each column
+    for i, algorithm in enumerate(algorithms):
+        Label(frames[i], text=algorithm, font=("Arial", 12, "bold")).pack(anchor=NW, padx=5, pady=5)
+        for param in parameters:
+            Label(frames[i], text=param + ":").pack(anchor=NW, padx=5, pady=2)
+            Entry(frames[i]).pack(anchor=NW, padx=5, pady=2)
+
+    # Create a button to compare the algorithms
+    compare_button = Button(window, text="Compare Algorithms", command=compare_algorithms, font=("Arial", 12))
+    compare_button.pack(padx=20, pady=20)
+
+def compare_algorithms():
+    # Retrieve the parameter values from the entry fields and perform comparison
+    # Implement your comparison logic here
+    print("hello")
     # ... Add widgets to compare algorithms
 
 #endregion
