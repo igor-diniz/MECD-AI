@@ -2,6 +2,8 @@ from metaheuristics.solver import Solver
 from helpers.solution import Solution
 from copy import deepcopy
 import random
+import time
+import tracemalloc
 
 class HillClimbingSolver(Solver):
     def __init__(self, total_books, libraries, total_days):
@@ -31,23 +33,44 @@ class HillClimbingSolver(Solver):
             initial_solution = initial_solution_greedy
         return initial_solution        
 
-    def solve(self, initial_solution_random, initial_solution_greedy, internal_neighbors_generator, external_neighbors_generator, num_iterations: int , log = False):
-        iteration = 0
-        x = self.select_initial_solution_type(initial_solution_random, initial_solution_greedy) # Best solution after 'num_iterations' iterations without improvement
-        actual_score = self.evaluate_solution(x)
+    def solve(
+            self, initial_solution_random,
+            initial_solution_greedy,
+            internal_neighbors_generator,
+            external_neighbors_generator,
+            num_iterations: int,
+            log = False
+            ):
+        
+        start_time = time.time()
+        tracemalloc.start()
+        tracemalloc.clear_traces()
 
-        print(f"Init Solution:  {x}, score: {actual_score}")
+        print("Generating Initial Solution...")
+
+        iteration = 0
+        best_solution = self.select_initial_solution_type(initial_solution_random, initial_solution_greedy)
+        actual_score = self.evaluate_solution(best_solution)
+
+        print(f"Init Solution:  {best_solution}, score: {actual_score}")
+        
         while iteration < num_iterations:
             iteration += 1
-            neighbors_solution = self.select_neighbor_generator(x, internal_neighbors_generator, external_neighbors_generator) 
+            neighbors_solution = self.select_neighbor_generator(best_solution, internal_neighbors_generator, external_neighbors_generator) 
             neighbor_score = self.evaluate_solution(neighbors_solution)
             if neighbor_score > actual_score:
                 iteration = 0
-                x = neighbors_solution
+                best_solution = neighbors_solution
                 actual_score = neighbor_score
                 if log: 
-                    print(f"Solution:       {x}, score: {actual_score}")
+                    print("\nBest Neighbour Selected:\n", neighbors_solution)
+                    print("\nBest Solution So Far:\n", best_solution)
             
-            print(f"Final Solution: {x}, score: {actual_score}")
-            return x  # Return the best solution found within the maximum iterations
-
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        _, peak_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
+        print("\nFinal Solution:\n", best_solution)
+        return best_solution  # Return the best solution found within the maximum iterations
+            
