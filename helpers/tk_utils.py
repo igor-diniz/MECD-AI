@@ -132,7 +132,7 @@ def create_ts_insert_params_screen():
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ts(file, init_sol_var.get(), tabu_tenure_entry.get(), neighbours_n_entry.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ts(file.get(), init_sol_var.get(), tabu_tenure_entry.get(), neighbours_n_entry.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
@@ -143,7 +143,7 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
         widget.destroy()
     
     file_reader = FileReader()
-    total_books, libraries, total_days = file_reader.read(f"data/{file.get()}")
+    total_books, libraries, total_days = file_reader.read(f"data/{file}")
 
     original_stdout = sys.stdout  # Save original stdout for later restoration
     output_buffer = StringIO()  # Create a buffer to capture output
@@ -193,7 +193,7 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     #endregion
 #endregion
 #region ----- GENETIC ALGORITHM
-    #region --- INSERT TABU SEARCH PARAMS SCREEN
+    #region --- INSERT GENETIC ALGORITHM PARAMS SCREEN
 def create_ga_insert_params_screen():
     for widget in window.winfo_children():
         widget.destroy()
@@ -220,7 +220,7 @@ def create_ga_insert_params_screen():
                            "f_libraries_of_the_world")
     file_menu.pack()
 
-    pop_size_label = Label(window, text="Population size:", font=("Arial", 12))
+    pop_size_label = Label(window, text="Population size (min. 4):", font=("Arial", 12))
     pop_size_label.pack(padx=20, pady=10)
 
     pop_size_entry = Entry(window)
@@ -248,7 +248,7 @@ def create_ga_insert_params_screen():
     crossover_menu = OptionMenu(window, crossover_var, "Mid point", "Random point")
     crossover_menu.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file, pop_size_entry.get(), generations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file.get(), pop_size_entry.get(), generations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
@@ -258,7 +258,7 @@ def run_ga(file, pop_size_entry, generations_n_entry):
         widget.destroy()
     
     file_reader = FileReader()
-    total_books, libraries, total_days = file_reader.read(f"data/{file.get()}")
+    total_books, libraries, total_days = file_reader.read(f"data/{file}")
 
     original_stdout = sys.stdout  # Save original stdout for later restoration
     output_buffer = StringIO()  # Create a buffer to capture output
@@ -293,7 +293,7 @@ def run_ga(file, pop_size_entry, generations_n_entry):
         n_generations=int(generations_n_entry),
         mutate_mode="swap",
         crossover_mode="mid",
-        results_csv="analysis/ga/results.csv",
+        results_csv="analysis/ga/",
         filename=file
         )
         frame_subtitle.config(text="Finished execution!")
@@ -336,7 +336,7 @@ def create_hc_insert_params_screen():
                            "f_libraries_of_the_world")
     file_menu.pack()
 
-    init_sol_label = Label(window, text="Initial solution generation mode (TO BE REVIEWED WITH GROUP)",
+    init_sol_label = Label(window, text="Initial solution generation mode",
                          font=("Arial", 12))
     init_sol_label.pack(padx=20, pady=10)
     init_sol_var = StringVar()
@@ -350,7 +350,7 @@ def create_hc_insert_params_screen():
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file, init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file.get(), init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
@@ -361,7 +361,7 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
         widget.destroy()
     
     file_reader = FileReader()
-    total_books, libraries, total_days = file_reader.read(f"data/{file.get()}")
+    total_books, libraries, total_days = file_reader.read(f"data/{file}")
 
     original_stdout = sys.stdout  # Save original stdout for later restoration
     output_buffer = StringIO()  # Create a buffer to capture output
@@ -389,16 +389,14 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     scrollbar.config(command=text_area.yview)  # Configure the scrollbar to control the text area's yview
     
     hc = HillClimbingSolver(total_books, libraries, total_days)
-    #initial_solution = hc.create_initial_solution(mode=init_sol_var)
+    initial_solution = hc.create_initial_solution(mode=init_sol_var)
     
     try: 
         hc.solve(
-            initial_solution_random = hc.initial_solution_random,
-            initial_solution_greedy = hc.initial_solution_greedy,
-            internal_neighbors_generator = hc.internal_neighbors_generator,
-            external_neighbors_generator = hc.external_neighbors_generator,
-            #initial_solution=initial_solution,
+            initial_solution=initial_solution,
             num_iterations=int(max_iterations_n_entry),
+            results_csv='analysis/hc/',
+            filename=file,
             log=True)
 
     finally:
@@ -452,19 +450,34 @@ def create_sa_insert_params_screen():
 
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
+
+    temperature_label = Label(window, text="Temperature:", font=("Arial", 12))
+    temperature_label.pack(padx=20, pady=10)
+
+    temperature_entry = Entry(window)
+    temperature_entry.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_sa(file, init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    cooling_schedule_label = Label(window, text="Cooling schedule:", font=("Arial", 12))
+    cooling_schedule_label.pack(padx=20, pady=10)
+
+    cooling_schedule_entry = Entry(window)
+    cooling_schedule_entry.pack()
+    
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_sa(file.get(), init_sol_var.get(),
+                                                                                      max_iterations_n_entry.get(),
+                                                                                      temperature_entry.get(),
+                                                                                      cooling_schedule_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
     #region ----- HILL CLIMBING RUNNING SCREEN
 
-def run_sa(file, init_sol_var, max_iterations_n_entry):
+def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, cooling_schedule_entry):
     for widget in window.winfo_children():
         widget.destroy()
     
     file_reader = FileReader()
-    total_books, libraries, total_days = file_reader.read(f"data/{file.get()}")
+    total_books, libraries, total_days = file_reader.read(f"data/{file}")
 
     original_stdout = sys.stdout  # Save original stdout for later restoration
     output_buffer = StringIO()  # Create a buffer to capture output
@@ -497,10 +510,12 @@ def run_sa(file, init_sol_var, max_iterations_n_entry):
     try: 
         sa.solve(
             initial_solution=initial_solution,
-            internal_neighbors_generator = sa.internal_neighbors_generator,
-            external_neighbors_generator = sa.external_neighbors_generator,
             num_iterations=int(max_iterations_n_entry),
-            log=True)
+            T=float(temperature_entry),
+            cooling_schedule=float(cooling_schedule_entry),
+            log=True,
+            results_csv="analysis/hc/",
+            filename=file)
 
     finally:
         frame_subtitle.config(text="Finished execution!")

@@ -97,7 +97,6 @@ class GeneticAlgorithm(Solver):
         if results_csv and filename:
             results_to_csv(results_csv, self.curr_sol_history, filename, population_size, (n_generations, fittest_generation),
                                 mutate_mode, crossover_mode, best_score, elapsed_time, peak_memory)
-            print(f"Result written to {results_csv}.")
         
         if evolution_log:
             print(f"Generations log: {generations_log}")
