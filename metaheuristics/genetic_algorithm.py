@@ -85,7 +85,6 @@ class GeneticAlgorithm(Solver):
         end_time = time.time()
         elapsed_time = end_time - start_time
         _, peak_memory = tracemalloc.get_traced_memory()
-        print(peak_memory)
         tracemalloc.stop()
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
 
