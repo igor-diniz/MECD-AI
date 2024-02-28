@@ -60,6 +60,7 @@ class Solver:
             sol_libraries.remove(sol_libraries[index_1])
 
         return deepcopy(self.select_library_books(sol_libraries))
+
     
     def get_external_neighbour(self, solution: Solution):
         
