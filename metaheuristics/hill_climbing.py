@@ -12,8 +12,18 @@ class HillClimbingSolver(Solver):
     def evaluate_solution(self, solution):
         total_score = solution.evaluate()
         return total_score
+    
+    def select_neighbor_generator(self, external_neighbors_generator, internal_neighbors_generator):
+        choice = ["internal", "external"]
+        neighbor_generator = None
+        selected_generator = random.choice(choice)
+        if selected_generator == "external":
+            neighbor_generator = external_neighbors_generator
+        else: 
+            neighbor_generator = internal_neighbors_generator
+        return  neighbor_generator 
 
-    def solve(self, initial_solution,neighbors_generator, max_iterations=1000):
+    def solve(self, initial_solution, max_iterations=1000):
         x = initial_solution
         actual_score = self.evaluate_solution(x)
         for _ in range(max_iterations):

@@ -14,15 +14,19 @@ def solve(file_name):
     print(random_initial_solution)
 
     neighbor = simulated_annealing_solver.get_internal_neighbour
-    #neighbor2 = hill_climbing_solver.get_external_neighbour
+    neighbor2 = simulated_annealing_solver.get_external_neighbour
     
     print()
 
     print("Simulated Annealing Solution")
-    best_solution = simulated_annealing_solver.solve(random_initial_solution, neighbor, 10)
+    best_solution = simulated_annealing_solver.solve(random_initial_solution, neighbor,neighbor2, 1000)
     print(best_solution)
 
-    return best_solution
+    #neighbor_selected= simulated_annealing_solver.select_neighbor_generator(random_initial_solution,neighbor,neighbor2)
+    #print(neighbor_selected)
+
+
+    #return best_solution
 
 if __name__ == "__main__":
-    solve("data/b_read_on.in")
+    solve("data/a_example_2.in")
