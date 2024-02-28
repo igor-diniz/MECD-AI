@@ -48,6 +48,6 @@ class HillClimbingSolver(Solver):
                 if log: 
                     print(f"Solution:       {x}, score: {actual_score}")
             
-        print(f"Final Solution: {x}, score: {actual_score}")
-        return x  # Return the best solution found within the maximum iterations
+            print(f"Final Solution: {x}, score: {actual_score}")
+            return x  # Return the best solution found within the maximum iterations
 
