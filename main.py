@@ -7,6 +7,36 @@ def solve(file_name):
     file_reader = FileReader()
     total_books, libraries, total_days = file_reader.read(file_name)
     
+    hill_climbing_solver = HillClimbingSolver(total_books, libraries, total_days)
+
+    print("Random Initial Solution")
+    random_initial_solution = hill_climbing_solver.create_initial_solution("random")
+    greedy_initial_solution = hill_climbing_solver.create_initial_solution("greedy")
+    print(random_initial_solution)
+
+    neighbor = hill_climbing_solver.get_internal_neighbour
+    neighbor2 = hill_climbing_solver.get_external_neighbour
+    
+    print()
+
+    print("Simulated Annealing Solution")
+    best_solution = hill_climbing_solver.solve(random_initial_solution,greedy_initial_solution, neighbor,neighbor2, 10000)
+    print(best_solution)
+
+    #neighbor_selected= simulated_annealing_solver.select_neighbor_generator(random_initial_solution,neighbor,neighbor2)
+    #print(neighbor_selected)
+
+
+    #return best_solution
+
+
+
+
+
+
+    '''file_reader = FileReader()
+    total_books, libraries, total_days = file_reader.read(file_name)
+    
     simulated_annealing_solver = SimulatedAnnealing(total_books, libraries, total_days)
 
     print("Random Initial Solution")
@@ -26,7 +56,7 @@ def solve(file_name):
     #print(neighbor_selected)
 
 
-    #return best_solution
+    #return best_solution'''
 
 if __name__ == "__main__":
-    solve("data/a_example_2.in")
+    solve("data/a_example_4.in")
