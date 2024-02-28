@@ -50,8 +50,8 @@ class HillClimbingSolver(Solver):
             if neighbor_score > actual_score:
                 #iteration = 0
                 best_solution = neighbors_solution
-                self.curr_sol_history.append(best_solution)
                 actual_score = neighbor_score
+                self.curr_sol_history.append(actual_score)
                 if log: 
                     print("\nBest Neighbour Selected:\n", neighbors_solution)
                     print("\nBest Solution So Far:\n", best_solution)
@@ -62,7 +62,7 @@ class HillClimbingSolver(Solver):
         tracemalloc.stop()
 
         if results_csv and filename:
-            results_to_csv(results_csv, filename, best_solution, actual_score, elapsed_time, peak_memory)
+            results_to_csv(results_csv, self.curr_sol_history, filename, actual_score, elapsed_time, peak_memory, num_iterations)
             print(f"Result written to {results_csv}.")
 
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
