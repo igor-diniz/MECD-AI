@@ -1,0 +1,4 @@
+ID,File Instance,GA Population Size,GA Generations,GA Mutate Mode,GA Crossover Mode,GA Score,GA Time,GA Memory
+1,data/a_example.in,300,"(15, 1)",swap,mid,76,10.609254121780396,5195530
+2,data/a_example_2.in,300,"(15, 1)",swap,mid,76,10.473912954330444,5196785
+3,data/a_example_3.in,300,"(15, 1)",swap,mid,76,10.473912954330444,5196785
