@@ -1,0 +1,5 @@
+ID,File Instance,Initial Score,Initial Time,Initial Memory,Initial Type,Tabu Score,Tabu Time,Tabu Memory,Tabu Tenure,Candidate List Size,Max Iterations
+1,data/a_example.in,21,0.0003898143768310547,7472,greedy,21,0.002417325973510742,25048,7,-1,100
+2,data/a_example_2.in,67,0.0008106231689453125,17048,greedy,76,1.819946527481079,225888,7,-1,100
+3,data/a_example_3.in,2843,0.004789113998413086,132088,greedy,3092,230.90306448936462,7530565,7,-1,100
+4,data/a_example_4.in,16921,0.22668743133544922,875560,greedy,18498,648.6844501495361,3597544,7,15,100
