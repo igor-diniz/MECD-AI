@@ -621,7 +621,8 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     #endregion
 #endregion    
 #region ----- COMPARE ALGORITHMS SCREEN
-def comparison_results_screen(initial_solution, elapsed_time, peak_memory, solution_id):
+def comparison_results_screen(initial_solution, elapsed_time, peak_memory, solution_id,
+                              hc_var, sa_var, ts_var, ga_var):
     for widget in window.winfo_children():
         widget.destroy()
 
@@ -638,11 +639,21 @@ def comparison_results_screen(initial_solution, elapsed_time, peak_memory, solut
     back_alg_button = Button(window, text="Compare again with different parameters", command=lambda: back_to_page(create_compare_screen))
     back_alg_button.pack(side=BOTTOM, pady=10)
 
+    algorithms_selected = {"HC": hc_var,
+                       "SA": sa_var,
+                       "TS": ts_var,
+                       "GA": ga_var}
+
+    algorithms_to_plot = []
+    for key, value in algorithms_selected.items():
+        if value == 1:
+            algorithms_to_plot.append(key)
+
     show_results_button = Button(window, text="Generate plots",
                           font=("Arial", 15),
                           command=lambda: utils.compare_algorithms(data_df=merged_df,
                              id=solution_id,
-                             algorithms=["HC", "SA", "TS", "GA"], 
+                             algorithms=algorithms_to_plot, 
                              initial_score=initial_solution.evaluate(), 
                              initial_time=elapsed_time, 
                              initial_memory=peak_memory,
@@ -714,7 +725,9 @@ def running_algorithms_screen(file,
                               deepcopy(initial_solution),
                               elapsed_time,
                               peak_memory,
-                              common_uuid
+                              common_uuid,
+                              hc_var, sa_var, ts_var, ga_var
+                              
                           ))
     show_results_button.pack_forget()
     
