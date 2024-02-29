@@ -165,6 +165,7 @@ class TabuSearchSolver(Solver):
               max_iterations: int=1000,
               log: bool=False,
               results_csv: str=None,
+              solution_id: str=None,
               filename: str=None
               ):
         
@@ -212,7 +213,7 @@ class TabuSearchSolver(Solver):
         tracemalloc.stop()
 
         if results_csv and filename:
-            utils.results_to_csv(results_csv, self.curr_sol_history, filename, best_score, elapsed_time, peak_memory, tabu_tenure, n_neighbours, max_iterations)
+            utils.results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, best_score, elapsed_time, peak_memory, tabu_tenure, n_neighbours, max_iterations)
             print(f"Result written to {results_csv}.")
 
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")

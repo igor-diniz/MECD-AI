@@ -10,30 +10,20 @@ from helpers.solution import Solution
 def results_to_csv(csv_path: str, curr_solution_history: list,
                     *columns):
         
-        data = columns
+        data = [*columns]
         metrics_filename = csv_path + "/metrics.csv"
 
-        with open(metrics_filename, mode='a+', newline='') as file:
+        with open(metrics_filename, mode='a', newline='') as file:
             writer = csv.writer(file)
+            writer.writerow(data)
 
-            file.seek(0)
-            rows = file.readlines()
-
-            if len(rows) > 1:  # Check if there is more than just the header row
-                last_row = rows[-1]
-                next_row_id = int(last_row[0]) + 1
-            else: 
-                next_row_id = 1
-
-            writer.writerow([next_row_id, *data])
-
-        save_history(csv_path, next_row_id, curr_solution_history)
+        save_history(csv_path, data[0], curr_solution_history)
 
 
 def save_history(csv_path: str, id: int, curr_solution_history: list):
         history_filename = csv_path + "/solutions_history.csv"
 
-        with open(history_filename, mode='a+', newline='') as file:
+        with open(history_filename, mode='a', newline='') as file:
             writer = csv.writer(file)
 
             # Write the solution history to the CSV file
@@ -69,12 +59,20 @@ def merge_metrics_dataframes(analysis_folder):
     return merged_metrics_df
 
 
-def compare_algorithms(data_df: pd.DataFrame, id: int, algorithms: list, initial_score, initial_time: float, initial_memory: float):
+def compare_algorithms(data_df: pd.DataFrame, 
+                       id: int, 
+                       algorithms: list, 
+                       initial_score, 
+                       initial_time: float, 
+                       initial_memory: float, 
+                       save: bool=True, 
+                       analysis_folder: str="analysis"):
+    
     metrics = ['Score', 'Time', 'Memory']
     initial_metrics = [initial_score, initial_time, initial_memory]
 
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(len(metrics), 1, figsize=(5, 10))
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(10, 12))
 
     id_data = data_df[data_df['ID'] == id]
 
@@ -100,4 +98,8 @@ def compare_algorithms(data_df: pd.DataFrame, id: int, algorithms: list, initial
                              textcoords='offset points')
 
     plt.tight_layout()
+
+    if save:
+         plt.savefig(f'{analysis_folder}/images/{id}.png')
+
     plt.show()
