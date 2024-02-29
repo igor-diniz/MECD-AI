@@ -91,7 +91,6 @@ class GeneticAlgorithm(Solver):
         end_time = time.time()
         elapsed_time = end_time - start_time
         _, peak_memory = tracemalloc.get_traced_memory()
-        print(peak_memory)
         tracemalloc.stop()
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
 
@@ -99,7 +98,6 @@ class GeneticAlgorithm(Solver):
         if results_csv and filename:
             results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, population_size, (n_generations, fittest_generation),
                                 mutate_mode, crossover_mode, best_score, elapsed_time, peak_memory)
-            print(f"Result written to {results_csv}.")
         
         if evolution_log:
             print(f"Generations log: {generations_log}")
@@ -159,8 +157,8 @@ class Population(GeneticAlgorithm):
             child_2_libraries = np.append(individual_2.libraries[0:index_1], individual_1.libraries[index_2:]).tolist()    
         else:
             # Random point cross-over
-            index_1 = random.randint(1, len(individual_1.libraries) - 1)
-            index_2 = random.randint(1, len(individual_2.libraries) - 1)
+            index_1 = random.randint(1, len(individual_1.libraries))
+            index_2 = random.randint(1, len(individual_2.libraries))
             child_1_libraries = np.append(individual_1.libraries[0:index_1], individual_2.libraries[index_2:]).tolist()
             child_2_libraries = np.append(individual_1.libraries[index_1:], individual_2.libraries[0:index_2]).tolist()
 
