@@ -5,8 +5,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from helpers.solution import Solution
-
 def results_to_csv(csv_path: str, curr_solution_history: list,
                     *columns):
         
@@ -70,9 +68,11 @@ def compare_algorithms(data_df: pd.DataFrame,
     
     metrics = ['Score', 'Time', 'Memory']
     initial_metrics = [initial_score, initial_time, initial_memory]
+    colors = ["#051821", "#1A4645", "#266867", "#F58800", "#F8BC24"]
 
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(len(metrics), 1, figsize=(10, 12))
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(8, 15))
+    fig.suptitle(f"Comparison for Different Algorithms\nID={id}\n\n")
 
     id_data = data_df[data_df['ID'] == id]
 
@@ -81,12 +81,14 @@ def compare_algorithms(data_df: pd.DataFrame,
         for algorithm in algorithms:
             data[algorithm] = id_data[f"{algorithm} {metric}"]
         
-        data[f"Initial {metric}"] = initial_metrics[i]
+        data[f"Initial"] = initial_metrics[i]
         
-        sns.barplot(data=data, ax=axes[i])
-        axes[i].set_xlabel('Algorithm')
+        sns.barplot(data=data, ax=axes[i], palette=colors[:len(algorithms) + 1])
+
         axes[i].set_ylabel(metric)
-        axes[i].set_title(f"Comparison of {metric} for Different Algorithms (ID={id})")
+        
+        if i == len(metrics) - 1:
+            axes[i].set_xlabel('Algorithm')
 
         # Set the value of each bar
         for bar in axes[i].patches:
@@ -100,6 +102,41 @@ def compare_algorithms(data_df: pd.DataFrame,
     plt.tight_layout()
 
     if save:
-         plt.savefig(f'{analysis_folder}/images/{id}.png')
+         plt.savefig(f'{analysis_folder}/images/{id}_comparison.png')
+
+    plt.show()
+
+
+def plot_solution_history(id: str, algorithm: str, save: bool=True, analysis_folder: str="analysis"):
+    solutions_history_df = pd.read_csv(f"{analysis_folder}/{algorithm}/solutions_history.csv")
+    metrics_df = pd.read_csv(f"{analysis_folder}/{algorithm}/metrics.csv")
+    merged_df = pd.merge(solutions_history_df, metrics_df, on="ID")
+
+    id_df = merged_df[merged_df["ID"] == id]
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(range(len(id_df)), id_df['Solution History'], color="black", label="Solution History")
+
+    handles = []
+    labels = []
+    for column in id_df.columns:
+        if column not in ['ID', 'File Instance', 
+                          f'{algorithm.upper()} Score', 
+                          f'{algorithm.upper()} Time', 
+                          f'{algorithm.upper()} Memory', 
+                          'Solution History']:
+            
+            label = f"{column}: {id_df[column].iloc[0]}"
+            handle, = plt.plot([], [], 'o', color='black', label=label)
+            handles.append(handle)
+            labels.append(label)
+
+    plt.xlabel('Iterations')
+    plt.ylabel('Current Solution Score')
+    plt.title(f"{id_df['File Instance'].iloc[0]} solution history for {algorithm}")
+    plt.legend(handles, labels, loc='upper right', bbox_to_anchor=(1, 1), title='Legend', fontsize='small')
+
+    if save:
+         plt.savefig(f'{analysis_folder}/images/{id}_{algorithm}.png')
 
     plt.show()
