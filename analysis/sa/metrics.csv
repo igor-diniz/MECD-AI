@@ -1,5 +1,2 @@
 ID,File Instance,SA Score,SA Time,SA Memory,SA Temperature,SA Colling Rate,SA Iterations
-1,data/a_example.in,18,0.002417325973510742,25048,100,0.99,100
-2,data/a_example_2.in,25,0.00345678901,23456,200,0.98,200
-3,data/a_example_3.in,35,0.00456789012,34567,300,0.97,300
-4,data/a_example_2.in,76,0.3739190101623535,54452,1000,0.99,100
+

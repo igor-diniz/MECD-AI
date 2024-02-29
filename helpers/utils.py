@@ -5,6 +5,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from helpers.solution import Solution
+
 def results_to_csv(csv_path: str, curr_solution_history: list,
                     *columns):
         
@@ -62,14 +64,14 @@ def merge_metrics_dataframes(analysis_folder):
 
             if file.endswith("metrics.csv"):
                 metrics_df = pd.read_csv(file_path)
-                merged_metrics_df = pd.merge(merged_metrics_df, metrics_df, on=["ID", "File Instance"], how="outer", suffixes=('_merged', '_metrics'))
+                merged_metrics_df = pd.merge(merged_metrics_df, metrics_df, on=["ID", "File Instance"], how="outer")
 
     return merged_metrics_df
 
 
-def compare_algorithms(data_df, id):
-    algorithms = ['GA', 'SA', 'Tabu', 'HC', 'Initial']
+def compare_algorithms(data_df: pd.DataFrame, id: int, algorithms: list, initial_score, initial_time: float, initial_memory: float):
     metrics = ['Score', 'Time', 'Memory']
+    initial_metrics = [initial_score, initial_time, initial_memory]
 
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(len(metrics), 1, figsize=(5, 10))
@@ -80,6 +82,8 @@ def compare_algorithms(data_df, id):
         data = pd.DataFrame()
         for algorithm in algorithms:
             data[algorithm] = id_data[f"{algorithm} {metric}"]
+        
+        data[f"Initial {metric}"] = initial_metrics[i]
         
         sns.barplot(data=data, ax=axes[i])
         axes[i].set_xlabel('Algorithm')
@@ -92,7 +96,7 @@ def compare_algorithms(data_df, id):
                              (bar.get_x() + bar.get_width() / 2, 
                               bar.get_height()), 
                              ha='center', va='center', 
-                             size=10, xytext=(0, 2.5),
+                             size=10, xytext=(0, 3.5),
                              textcoords='offset points')
 
     plt.tight_layout()

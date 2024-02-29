@@ -1,7 +1,10 @@
+import time
+import tracemalloc
 from helpers.file_reader import FileReader
 from metaheuristics.genetic_algorithm import GeneticAlgorithm
 from metaheuristics.hill_climbing import HillClimbingSolver
 from metaheuristics.simulated_annealing import SimulatedAnnealing
+from metaheuristics.tabu_search import TabuSearchSolver
 from metaheuristics.solver import Solver
 
 def solve(file_name):
@@ -9,7 +12,18 @@ def solve(file_name):
     total_books, libraries, total_days = file_reader.read(file_name)
 
     parent_solver = Solver(total_books, libraries, total_days)
-    initial_solution = parent_solver.create_initial_solution("random")
+    initial_sol_mode = "random"
+
+    start_time = time.time()
+    tracemalloc.start()
+    tracemalloc.clear_traces()
+    
+    initial_solution = parent_solver.create_initial_solution(initial_sol_mode)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    _, peak_memory = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
 
     hc = HillClimbingSolver(total_books, libraries, total_days)
     hc.solve(
@@ -30,6 +44,17 @@ def solve(file_name):
             results_csv="analysis/sa",
             filename=file_name
             )
+    
+    ts = TabuSearchSolver(total_books, libraries, total_days)
+    ts.solve(
+              initial_solution,
+              tabu_tenure=9,
+              n_neighbours=30,
+              max_iterations=100,
+              log=True,
+              results_csv="analysis/ts",
+              filename=file_name
+              )
     
     ga = GeneticAlgorithm(total_books, libraries, total_days)
     ga.solve(
