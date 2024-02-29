@@ -1,2 +1,6 @@
-ID,File Instance,Tabu Score,Tabu Time,Tabu Memory,Tabu Tenure,Candidate List Size,Max Iterations
-
+ID,File Instance,TS Score,TS Time,TS Memory,TS Tenure,Candidate List Size,Max Iterations
+1,data/a_example_2.in,248,7.527940273284912,190780,9,30,100
+2,data/a_example_2.in,248,11.783381223678589,190897,9,30,100
+3,data/a_example_3.in,375,62.493711709976196,884180,9,100,100
+4,data/a_example_4.in,2188,4527.210278511047,36770808,9,-1,100
+5,data/a_example_4.in,2188,989.2168154716492,8075535,9,300,100

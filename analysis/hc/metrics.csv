@@ -1,2 +1,6 @@
 ID,File Instance,HC Score,HC Time,HC Memory,HC Iterations
-
+1,data/a_example_2.in,288,0.44161176681518555,174387,100
+2,data/a_example_2.in,248,0.3738729953765869,168475,100
+3,data/a_example_3.in,332,0.8604986667633057,258718,100
+4,data/a_example_4.in,2097,5.810373544692993,1037749,100
+5,data/a_example_4.in,1832,5.679112195968628,1025561,100

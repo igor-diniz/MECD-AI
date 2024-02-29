@@ -6,6 +6,7 @@ from metaheuristics.hill_climbing import HillClimbingSolver
 from metaheuristics.simulated_annealing import SimulatedAnnealing
 from metaheuristics.tabu_search import TabuSearchSolver
 from metaheuristics.solver import Solver
+from helpers import utils
 
 def solve(file_name):
     file_reader = FileReader()
@@ -49,7 +50,7 @@ def solve(file_name):
     ts.solve(
               initial_solution,
               tabu_tenure=9,
-              n_neighbours=30,
+              n_neighbours=300,
               max_iterations=100,
               log=True,
               results_csv="analysis/ts",
@@ -66,6 +67,15 @@ def solve(file_name):
         filename=file_name
     )
 
+    merged_df = utils.merge_metrics_dataframes("analysis")
+    
+    utils.compare_algorithms(data_df=merged_df, 
+                             id=max(merged_df.ID), 
+                             algorithms=["HC", "SA", "TS", "GA"], 
+                             initial_score=initial_solution.evaluate(), 
+                             initial_time=elapsed_time, 
+                             initial_memory=peak_memory)
+
 
 if __name__ == "__main__":
-    solve("data/a_example_2.in")
+    solve("data/a_example_4.in")
