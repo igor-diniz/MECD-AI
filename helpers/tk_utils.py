@@ -1,6 +1,7 @@
 from tkinter import *
 from io import StringIO
 from helpers.file_reader import FileReader
+from helpers import utils
 from metaheuristics.solver import Solver
 from metaheuristics.genetic_algorithm import GeneticAlgorithm
 from metaheuristics.tabu_search import TabuSearchSolver
@@ -8,6 +9,8 @@ from metaheuristics.hill_climbing import HillClimbingSolver
 from metaheuristics.simulated_annealing import SimulatedAnnealing
 import sys
 import threading
+import time
+import tracemalloc
 from copy import deepcopy
 from uuid import uuid4
 
@@ -42,7 +45,7 @@ def create_welcome_screen():
     compare_button.pack(padx=20, pady=10)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
 #endregion
 #region ----- CHOOSE ALGORITHM SCREEN
@@ -83,7 +86,7 @@ def create_choose_algorithm_screen():
     ga_button.pack(padx=20, pady=10)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
 # endregion    
 #region ----- TABU SEARCH 
@@ -134,17 +137,17 @@ def create_ts_insert_params_screen():
     neighbours_n_entry = Entry(window)
     neighbours_n_entry.pack()
 
-    max_iterations_label = Label(window, text="Maximum number of iterations:", font=("Arial", 12))
+    max_iterations_label = Label(window, text="Max. number of iterations:", font=("Arial", 12))
     max_iterations_label.pack(padx=20, pady=10)
 
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
     
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ts(file.get(), init_sol_var.get(), tabu_tenure_entry.get(), neighbours_n_entry.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
-    run_button.pack(padx=20, pady=20)
+    run_button.pack(pady=20)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
     #endregion
     #region ----- TABU SEARCH RUNNING SCREEN
@@ -190,6 +193,7 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     initial_solution = ts.create_initial_solution(mode=init_sol_var)
         
     try: 
+        id = str(uuid4())
         ts.solve(
         initial_solution=initial_solution,
         tabu_tenure=int(tabu_tenure_entry),
@@ -197,6 +201,7 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
         max_iterations=int(max_iterations_n_entry),
         log=True,
         results_csv="analysis/ts/",
+        solution_id=id,
         filename=file
         )
 
@@ -267,10 +272,10 @@ def create_ga_insert_params_screen():
     crossover_menu.pack()
     
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file.get(), pop_size_entry.get(), generations_n_entry.get(), mutate_var.get(), crossover_var.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
-    run_button.pack(padx=20, pady=20)
+    run_button.pack(pady=20)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
     #endregion
     #region --- GENETIC ALGORITHM RUNNING SCREEN
@@ -313,12 +318,14 @@ def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var)
     ga = GeneticAlgorithm(total_books, libraries, total_days)
     
     try: 
+        id = str(uuid4())
         ga.solve(
         population_size=int(pop_size_entry),
         n_generations=int(generations_n_entry),
         mutate_mode=mutate_var,
         crossover_mode=crossover_var,
         results_csv="analysis/ga/",
+        solution_id=id,
         filename=file
         )
 
@@ -368,17 +375,17 @@ def create_hc_insert_params_screen():
     init_sol_menu = OptionMenu(window, init_sol_var, "Random", "Greedy")
     init_sol_menu.pack()
     
-    max_iterations_label = Label(window, text="Maximum number of iterations:", font=("Arial", 12))
+    max_iterations_label = Label(window, text="Max. number of iterations:", font=("Arial", 12))
     max_iterations_label.pack(padx=20, pady=10)
 
     max_iterations_n_entry = Entry(window)
     max_iterations_n_entry.pack()
     
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file.get(), init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
-    run_button.pack(padx=20, pady=20)
+    run_button.pack(pady=20)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
     #endregion
     #region ----- HILL CLIMBING RUNNING SCREEN
@@ -423,11 +430,13 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     initial_solution = hc.create_initial_solution(mode=init_sol_var)
     
     try: 
+        id = str(uuid4())
         hc.solve(
             initial_solution=initial_solution,
             num_iterations=int(max_iterations_n_entry),
             results_csv='analysis/hc/',
             filename=file,
+            solution_id=id,
             log=True)
 
     finally:
@@ -476,7 +485,7 @@ def create_sa_insert_params_screen():
     init_sol_menu = OptionMenu(window, init_sol_var, "Random", "Greedy")
     init_sol_menu.pack()
     
-    max_iterations_label = Label(window, text="Maximum number of iterations:", font=("Arial", 12))
+    max_iterations_label = Label(window, text="Max. number of iterations:", font=("Arial", 12))
     max_iterations_label.pack(padx=20, pady=10)
 
     max_iterations_n_entry = Entry(window)
@@ -498,10 +507,10 @@ def create_sa_insert_params_screen():
                                                                                       max_iterations_n_entry.get(),
                                                                                       temperature_entry.get(),
                                                                                       cooling_schedule_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
-    run_button.pack(padx=20, pady=20)
+    run_button.pack(pady=20)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
     #endregion
     #region ----- SIMULATED ANNEALING RUNNING SCREEN
@@ -546,6 +555,7 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     initial_solution = sa.create_initial_solution(mode=init_sol_var)
     
     try: 
+        id = str(uuid4())
         sa.solve(
             initial_solution=initial_solution,
             num_iterations=int(max_iterations_n_entry),
@@ -553,6 +563,7 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
             cooling_schedule=float(cooling_schedule_entry),
             log=True,
             results_csv="analysis/sa/",
+            solution_id=id,
             filename=file)
 
     finally:
@@ -566,6 +577,49 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     #endregion
 #endregion    
 #region ----- COMPARE ALGORITHMS SCREEN
+def comparison_results_screen(initial_solution, elapsed_time, peak_memory, solution_id):
+    for widget in window.winfo_children():
+        widget.destroy()
+
+    frame_title = Label(window, text="Algorithms Comparison Results", font=("Arial", 18))
+    frame_title.pack(padx=20, pady=10)
+
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=10)
+    
+    # Back to Main Page button
+    back_button = Button(window, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
+    back_button.pack(side=BOTTOM, pady=10)
+
+    back_alg_button = Button(window, text="Compare again with different parameters", command=lambda: back_to_page(create_compare_screen))
+    back_alg_button.pack(side=BOTTOM, pady=10)
+
+    show_results_button = Button(window, text="Generate plots",
+                          font=("Arial", 15),
+                          command=lambda: utils.compare_algorithms(data_df=merged_df,
+                             id=solution_id,
+                             algorithms=["HC", "SA", "TS", "GA"], 
+                             initial_score=initial_solution.evaluate(), 
+                             initial_time=elapsed_time, 
+                             initial_memory=peak_memory,
+                             save=False,
+                             analysis_folder="analysis"))
+    show_results_button.pack(side=BOTTOM, pady=10)
+
+    merged_df = utils.merge_metrics_dataframes("analysis")
+
+    scrollbar = Scrollbar(window, orient=VERTICAL)
+    scrollbar.pack(side="right", fill="y")  # Pack scrollbar
+
+    # Pack the text area and scrollbar (adjust packing options as needed)
+    df_text_area = Text(window, wrap="word")  # Create a text area with word wrapping
+    df_text_area.configure(yscrollcommand=scrollbar.set)
+    df_text_area.pack(padx=20, pady=10, fill="both", expand=True)
+
+    scrollbar.config(command=df_text_area.yview)  # Configure the scrollbar to control the text area's yview
+
+    df_text_area.insert(END, merged_df[merged_df['ID'] == solution_id].T) 
+
 
 def running_algorithms_screen(file,
                               init_sol_var,
@@ -589,17 +643,36 @@ def running_algorithms_screen(file,
 
     frame_title = Label(window, text="Book Scanning Optimization", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
-    frame_subtitle = Label(window, text="Comparing Algorithms...", font=("Arial", 16))
+    frame_subtitle = Label(window, text="Running Algorithms...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
-    
+
     #region Run Selected Algorithms
     filename = file
     file_reader = FileReader()
 
     # Common inputs
+    start_time = time.time()
+    tracemalloc.start()
+    tracemalloc.clear_traces()
     total_books, libraries, total_days = file_reader.read(f"data/{filename}")
     initial_solution = Solver(total_books, libraries, total_days).create_initial_solution(mode=init_sol_var)
-    uuid = uuid4()
+    
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    _, peak_memory = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    common_uuid = str(uuid4())
+        
+    show_results_button = Button(window, text="Show results",
+                          font=("Arial", 15),
+                          command=lambda: comparison_results_screen(
+                              deepcopy(initial_solution),
+                              elapsed_time,
+                              peak_memory,
+                              common_uuid
+                          ))
+    show_results_button.pack_forget()
     
     if hc_var == 1:
         hc = HillClimbingSolver(total_books, deepcopy(libraries), total_days)
@@ -608,6 +681,7 @@ def running_algorithms_screen(file,
             initial_solution=deepcopy(initial_solution),
             num_iterations=int(num_iterations),
             results_csv='analysis/hc/',
+            solution_id=common_uuid,
             filename=file,
             log=True)
     
@@ -620,6 +694,7 @@ def running_algorithms_screen(file,
             cooling_schedule=float(cooling_schedule_entry),
             log=True,
             results_csv="analysis/sa/",
+            solution_id=common_uuid,
             filename=file)
 
     if ts_var == 1:
@@ -631,6 +706,7 @@ def running_algorithms_screen(file,
             max_iterations=int(ts_max_iterations_n_entry),
             log=True,
             results_csv="analysis/ts/",
+            solution_id=common_uuid,
             filename=file
             )
 
@@ -642,13 +718,15 @@ def running_algorithms_screen(file,
             mutate_mode=mutate_var,
             crossover_mode=crossover_var,
             results_csv="analysis/ga/",
+            solution_id=common_uuid,
             filename=file
         )
 
-        frame_subtitle.config(text="Finished Algorithms Execution!")
+    frame_subtitle.config(text="Finished Algorithms Execution!")
 
+    show_results_button.pack(pady=40)
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
 def create_compare_screen():
     for widget in window.winfo_children():
@@ -660,7 +738,7 @@ def create_compare_screen():
     frame_subtitle.pack(padx=20, pady=2)
 
     authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
-    authours_label.pack(side=BOTTOM, pady=20)
+    authours_label.pack(side=BOTTOM, pady=10)
 
     # Create compare button frame
     button_frame = Frame(window)
@@ -705,7 +783,7 @@ def create_compare_screen():
     # Compare button
     compare_button = Button(button_frame,
                             text="Compare",
-                            command=lambda: running_algorithms_screen(
+                            command=lambda: run_thread(lambda: running_algorithms_screen(
                                 file.get(),
                                 init_sol_var.get(),
                                 hc_var.get(),
@@ -723,16 +801,16 @@ def create_compare_screen():
                                 generations_n_entry.get(),
                                 mutate_var.get(),
                                 crossover_var.get()
-                            ),
+                            )),
                             font=("Arial", 15))
-    compare_button.pack(padx=20)
+    compare_button.pack(padx=20, pady=0)
 
     #region HC PARAMS
     hc_var = IntVar(value=1)  # Initialize as selected
     hc_check = Checkbutton(frames[1], text="Hill Climbing", variable=hc_var, font=("Arial", 12))
     hc_check.pack(anchor=NW, padx=5, pady=5)
 
-    hc_max_iterations_label = Label(frames[1], text="Maximum number of iterations:", font=("Arial", 10))
+    hc_max_iterations_label = Label(frames[1], text="Max. number of iterations:", font=("Arial", 10))
     hc_max_iterations_label.pack(anchor=NW, padx=5, pady=5)
 
     hc_max_iterations_n_entry = Entry(frames[1])
@@ -744,7 +822,7 @@ def create_compare_screen():
     sa_check = Checkbutton(frames[2], text="Simulated Annealing", variable=sa_var, font=("Arial", 12))
     sa_check.pack(anchor=NW, padx=5, pady=5)
     
-    sa_max_iterations_label = Label(frames[2], text="Maximum number of iterations:", font=("Arial", 10))
+    sa_max_iterations_label = Label(frames[2], text="Max. number of iterations:", font=("Arial", 10))
     sa_max_iterations_label.pack(anchor=NW, padx=5, pady=5)
 
     sa_max_iterations_n_entry = Entry(frames[2])
@@ -780,7 +858,7 @@ def create_compare_screen():
     neighbours_n_entry = Entry(frames[3])
     neighbours_n_entry.pack(anchor=NW, padx=15, pady=2)
 
-    ts_max_iterations_label = Label(frames[3], text="Maximum number of iterations:", font=("Arial", 10))
+    ts_max_iterations_label = Label(frames[3], text="Max. number of iterations:", font=("Arial", 10))
     ts_max_iterations_label.pack(anchor=NW, padx=15, pady=2)
 
     ts_max_iterations_n_entry = Entry(frames[3])
