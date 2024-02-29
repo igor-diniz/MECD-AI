@@ -174,6 +174,18 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
     back_button.pack(padx=20, pady=20)
 
+    id = str(uuid4())
+
+    # Generate Plots
+    plot_button = Button(window, text="Plot solution history",
+                          font=("Arial", 15),
+                          command=lambda: utils.plot_solution_history(
+                              id=id,
+                              algorithm="ts",
+                              save=False
+                          ))
+    plot_button.pack(side=BOTTOM, pady=10)
+
     frame_title = Label(window, text="Tabu Search", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
@@ -193,7 +205,6 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     initial_solution = ts.create_initial_solution(mode=init_sol_var)
         
     try: 
-        id = str(uuid4())
         ts.solve(
         initial_solution=initial_solution,
         tabu_tenure=int(tabu_tenure_entry),
@@ -301,6 +312,18 @@ def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var)
     back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
     back_button.pack(padx=20, pady=20)
 
+    id = str(uuid4())
+
+    # Generate Plots
+    plot_button = Button(window, text="Plot solution history",
+                          font=("Arial", 15),
+                          command=lambda: utils.plot_solution_history(
+                              id=id,
+                              algorithm="ga",
+                              save=False
+                          ))
+    plot_button.pack(side=BOTTOM, pady=10)
+
     frame_title = Label(window, text="Genetic Algorithm", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
@@ -318,7 +341,6 @@ def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var)
     ga = GeneticAlgorithm(total_books, libraries, total_days)
     
     try: 
-        id = str(uuid4())
         ga.solve(
         population_size=int(pop_size_entry),
         n_generations=int(generations_n_entry),
@@ -412,6 +434,18 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
     back_button.pack(padx=20, pady=20)
 
+    id = str(uuid4())
+
+    # Generate Plots
+    plot_button = Button(window, text="Plot solution history",
+                          font=("Arial", 15),
+                          command=lambda: utils.plot_solution_history(
+                              id=id,
+                              algorithm="hc",
+                              save=False
+                          ))
+    plot_button.pack(side=BOTTOM, pady=10)
+
     frame_title = Label(window, text="Hill Climbing", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
@@ -430,7 +464,6 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     initial_solution = hc.create_initial_solution(mode=init_sol_var)
     
     try: 
-        id = str(uuid4())
         hc.solve(
             initial_solution=initial_solution,
             num_iterations=int(max_iterations_n_entry),
@@ -537,6 +570,18 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
     back_button.pack(padx=20, pady=20)
 
+    id = str(uuid4())
+
+    # Generate Plots
+    plot_button = Button(window, text="Plot solution history",
+                          font=("Arial", 15),
+                          command=lambda: utils.plot_solution_history(
+                              id=id,
+                              algorithm="sa",
+                              save=False
+                          ))
+    plot_button.pack(side=BOTTOM, pady=10)
+
     frame_title = Label(window, text="Simulated Annealing", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
@@ -554,8 +599,7 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     sa = SimulatedAnnealing(total_books, libraries, total_days)
     initial_solution = sa.create_initial_solution(mode=init_sol_var)
     
-    try: 
-        id = str(uuid4())
+    try:
         sa.solve(
             initial_solution=initial_solution,
             num_iterations=int(max_iterations_n_entry),
