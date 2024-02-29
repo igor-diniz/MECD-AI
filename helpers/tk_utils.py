@@ -41,6 +41,9 @@ def create_welcome_screen():
                             font=("Arial", 11))
     compare_button.pack(padx=20, pady=10)
 
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
+
 #endregion
 #region ----- CHOOSE ALGORITHM SCREEN
 
@@ -78,6 +81,9 @@ def create_choose_algorithm_screen():
                           command=lambda: create_ga_insert_params_screen(),
                           font=("Arial", 12))
     ga_button.pack(padx=20, pady=10)
+
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
 
 # endregion    
 #region ----- TABU SEARCH 
@@ -136,6 +142,9 @@ def create_ts_insert_params_screen():
     
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ts(file.get(), init_sol_var.get(), tabu_tenure_entry.get(), neighbours_n_entry.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
+
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
 
     #endregion
     #region ----- TABU SEARCH RUNNING SCREEN
@@ -260,6 +269,9 @@ def create_ga_insert_params_screen():
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file.get(), pop_size_entry.get(), generations_n_entry.get(), mutate_var.get(), crossover_var.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
+
     #endregion
     #region --- GENETIC ALGORITHM RUNNING SCREEN
 def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var):
@@ -364,6 +376,9 @@ def create_hc_insert_params_screen():
     
     run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_hc(file.get(), init_sol_var.get(), max_iterations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
+
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
 
     #endregion
     #region ----- HILL CLIMBING RUNNING SCREEN
@@ -484,6 +499,9 @@ def create_sa_insert_params_screen():
                                                                                       temperature_entry.get(),
                                                                                       cooling_schedule_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
+
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
 
     #endregion
     #region ----- SIMULATED ANNEALING RUNNING SCREEN
@@ -629,6 +647,9 @@ def running_algorithms_screen(file,
 
         frame_subtitle.config(text="Finished Algorithms Execution!")
 
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
+
 def create_compare_screen():
     for widget in window.winfo_children():
         widget.destroy()
@@ -638,9 +659,12 @@ def create_compare_screen():
     frame_subtitle = Label(window, text="Compare Algorithms", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
 
+    authours_label = Label(window, text="Developed by Ingrid Diniz, Igor Diniz and Paula Ito", font=("Arial", 9))
+    authours_label.pack(side=BOTTOM, pady=20)
+
     # Create compare button frame
     button_frame = Frame(window)
-    button_frame.pack(side=BOTTOM, pady=20)
+    button_frame.pack(side=BOTTOM)
 
     # Create common parameters frame
     common_frame = Frame(window)
@@ -671,10 +695,11 @@ def create_compare_screen():
     init_sol_menu = OptionMenu(common_frame, init_sol_var, "Random", "Greedy")
     init_sol_menu.pack(side=LEFT)
 
+
     frames = []
     for _ in range(5):
         frame = Frame(window, padx=10, pady=10)
-        frame.pack(side=LEFT, padx=10, pady=10, fill=Y)
+        frame.pack(side=LEFT, padx=10, fill=Y)
         frames.append(frame)
 
     # Compare button
@@ -699,7 +724,7 @@ def create_compare_screen():
                                 mutate_var.get(),
                                 crossover_var.get()
                             ),
-                            font=("Arial", 14))
+                            font=("Arial", 15))
     compare_button.pack(padx=20)
 
     #region HC PARAMS
