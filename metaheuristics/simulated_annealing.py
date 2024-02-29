@@ -31,6 +31,7 @@ class SimulatedAnnealing(Solver):
             cooling_schedule: float,
             log=False,
             results_csv = None,
+            solution_id: str=None,
             filename = None
             ):
             
@@ -74,7 +75,8 @@ class SimulatedAnnealing(Solver):
             tracemalloc.stop()
 
             if results_csv and filename:
-                results_to_csv(results_csv, self.curr_sol_history, filename, best_score, elapsed_time, peak_memory, T, cooling_schedule, num_iterations)
+                results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, best_score, elapsed_time, peak_memory, T, cooling_schedule, num_iterations)
+                print(f"Result written to {results_csv}.")
 
             print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
             print("\nFinal Solution:\n", best_solution)

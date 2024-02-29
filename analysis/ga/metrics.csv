@@ -4,3 +4,5 @@ ID,File Instance,GA Population Size,GA Generations,GA Mutate Mode,GA Crossover M
 3,data/a_example_3.in,300,"(15, 1)",swap,mid,498,9.849515676498413,6715649
 4,data/a_example_4.in,300,"(15, 1)",swap,mid,2452,37.68522047996521,18224630
 5,data/a_example_4.in,300,"(15, 1)",swap,mid,2856,34.28533959388733,18038777
+f7783b65-497e-4369-b11d-396aaa2d7286,data/a_example_2.in,300,"(15, 1)",swap,mid,259,7.8429648876190186,3704202
+00c8b126-852b-4c67-bfa6-295b23c8d010,data/a_example_2.in,300,"(15, 1)",swap,mid,288,11.790247917175293,3760234

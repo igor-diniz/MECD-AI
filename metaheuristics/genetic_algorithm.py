@@ -21,8 +21,9 @@ class GeneticAlgorithm(Solver):
               mutate_mode: str,
               crossover_mode: str,
               log=False,
-              evolution_log= False,
+              evolution_log=False,
               results_csv=None,
+              solution_id: str=None,
               filename=None):
         
         start_time = time.time()
@@ -95,7 +96,7 @@ class GeneticAlgorithm(Solver):
 
         # Write results to csv, if csv file is provided
         if results_csv and filename:
-            results_to_csv(results_csv, self.curr_sol_history, filename, population_size, (n_generations, fittest_generation),
+            results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, population_size, (n_generations, fittest_generation),
                                 mutate_mode, crossover_mode, best_score, elapsed_time, peak_memory)
         
         if evolution_log:
