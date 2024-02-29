@@ -63,7 +63,6 @@ class HillClimbingSolver(Solver):
 
         if results_csv and filename:
             results_to_csv(results_csv, self.curr_sol_history, filename, actual_score, elapsed_time, peak_memory, num_iterations)
-            print(f"Result written to {results_csv}.")
 
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
         print("\nFinal Solution:\n", best_solution)

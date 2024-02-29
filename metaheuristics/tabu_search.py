@@ -213,7 +213,6 @@ class TabuSearchSolver(Solver):
 
         if results_csv and filename:
             utils.results_to_csv(results_csv, self.curr_sol_history, filename, best_score, elapsed_time, peak_memory, tabu_tenure, n_neighbours, max_iterations)
-            print(f"Result written to {results_csv}.")
 
         print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
         

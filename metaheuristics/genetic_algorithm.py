@@ -156,8 +156,8 @@ class Population(GeneticAlgorithm):
             child_2_libraries = np.append(individual_2.libraries[0:index_1], individual_1.libraries[index_2:]).tolist()    
         else:
             # Random point cross-over
-            index_1 = random.randint(1, len(individual_1.libraries) - 1)
-            index_2 = random.randint(1, len(individual_2.libraries) - 1)
+            index_1 = random.randint(1, len(individual_1.libraries))
+            index_2 = random.randint(1, len(individual_2.libraries))
             child_1_libraries = np.append(individual_1.libraries[0:index_1], individual_2.libraries[index_2:]).tolist()
             child_2_libraries = np.append(individual_1.libraries[index_1:], individual_2.libraries[0:index_2]).tolist()
 
