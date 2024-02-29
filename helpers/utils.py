@@ -72,7 +72,7 @@ def compare_algorithms(data_df: pd.DataFrame,
     initial_metrics = [initial_score, initial_time, initial_memory]
 
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(len(metrics), 1, figsize=(10, 12))
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(8,8))
 
     id_data = data_df[data_df['ID'] == id]
 
@@ -86,7 +86,8 @@ def compare_algorithms(data_df: pd.DataFrame,
         sns.barplot(data=data, ax=axes[i])
         axes[i].set_xlabel('Algorithm')
         axes[i].set_ylabel(metric)
-        axes[i].set_title(f"Comparison of {metric} for Different Algorithms (ID={id})")
+        axes[i].set_title(f"Comparison of {metric} for Different Algorithms")
+        axes[i].title.set_position([0.5, 0.2])
 
         # Set the value of each bar
         for bar in axes[i].patches:
@@ -98,6 +99,7 @@ def compare_algorithms(data_df: pd.DataFrame,
                              textcoords='offset points')
 
     plt.tight_layout()
+    plt.subplots_adjust(hspace=0.5)
 
     if save:
          plt.savefig(f'{analysis_folder}/images/{id}.png')
