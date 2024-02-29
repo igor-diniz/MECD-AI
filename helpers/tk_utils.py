@@ -1,16 +1,18 @@
 from tkinter import *
-from tkinter import ttk
 from io import StringIO
 from helpers.file_reader import FileReader
+from metaheuristics.solver import Solver
 from metaheuristics.genetic_algorithm import GeneticAlgorithm
 from metaheuristics.tabu_search import TabuSearchSolver
 from metaheuristics.hill_climbing import HillClimbingSolver
 from metaheuristics.simulated_annealing import SimulatedAnnealing
 import sys
 import threading
+from copy import deepcopy
+from uuid import uuid4
 
 window = Tk()
-window.geometry("1200x500")
+window.geometry("1100x550")
 window.title("Book Scanning Optimization")
 
 #region ----- WELCOME SCREEN
@@ -148,18 +150,23 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     original_stdout = sys.stdout  # Save original stdout for later restoration
     output_buffer = StringIO()  # Create a buffer to capture output
     sys.stdout = output_buffer  # Redirect stdout to the buffer
+    
+    button_frame = Frame(window)
+    button_frame.pack(side="bottom", anchor="c")  # Align the frame to the top-right corner
+
+    # Back to Algorithm button
+    back_alg_button = Button(button_frame, text="Run again with different parameters", command=lambda: back_to_page(create_ts_insert_params_screen))
+    back_alg_button.pack(padx=30, pady=0)
+
+    # Back to Main Page button
+    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
+    back_button.pack(padx=20, pady=20)
 
     frame_title = Label(window, text="Tabu Search", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
-
-    button_frame = Frame(window)
-    button_frame.pack(side="top", anchor="e")  # Align the frame to the top-right corner
-
-    # Back to Main Page button
-    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_main_page())
-    back_button.pack(padx=10, pady=0)
+   
 
     scrollbar = Scrollbar(window, orient=VERTICAL)
     scrollbar.pack(side="right", fill="y")  # Pack scrollbar
@@ -179,7 +186,9 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
         tabu_tenure=int(tabu_tenure_entry),
         n_neighbours=int(neighbours_n_entry),
         max_iterations=int(max_iterations_n_entry),
-        log=True
+        log=True,
+        results_csv="analysis/ts/",
+        filename=file
         )
 
     finally:
@@ -248,12 +257,12 @@ def create_ga_insert_params_screen():
     crossover_menu = OptionMenu(window, crossover_var, "Mid point", "Random point")
     crossover_menu.pack()
     
-    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file.get(), pop_size_entry.get(), generations_n_entry.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
+    run_button = Button(window, text="Run", command=lambda: run_thread(lambda: run_ga(file.get(), pop_size_entry.get(), generations_n_entry.get(), mutate_var.get(), crossover_var.get())), font=("Arial", 14))  # Replace with appropriate function call to run the algorithm
     run_button.pack(padx=20, pady=20)
 
     #endregion
     #region --- GENETIC ALGORITHM RUNNING SCREEN
-def run_ga(file, pop_size_entry, generations_n_entry):
+def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var):
     for widget in window.winfo_children():
         widget.destroy()
     
@@ -264,17 +273,21 @@ def run_ga(file, pop_size_entry, generations_n_entry):
     output_buffer = StringIO()  # Create a buffer to capture output
     sys.stdout = output_buffer  # Redirect stdout to the buffer
 
+    button_frame = Frame(window)
+    button_frame.pack(side="bottom", anchor="c")  # Align the frame to the top-right corner
+
+    # Back to Algorithm button
+    back_alg_button = Button(button_frame, text="Run again with different parameters", command=lambda: back_to_page(create_ga_insert_params_screen))
+    back_alg_button.pack(padx=30, pady=0)
+
+    # Back to Main Page button
+    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
+    back_button.pack(padx=20, pady=20)
+
     frame_title = Label(window, text="Genetic Algorithm", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
-
-    button_frame = Frame(window)
-    button_frame.pack(side="top", anchor="e")  # Align the frame to the top-right corner
-
-    # Back to Main Page button
-    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_main_page())
-    back_button.pack(padx=10, pady=0)
 
     scrollbar = Scrollbar(window, orient=VERTICAL)
     scrollbar.pack(side="right", fill="y")  # Pack scrollbar
@@ -291,12 +304,11 @@ def run_ga(file, pop_size_entry, generations_n_entry):
         ga.solve(
         population_size=int(pop_size_entry),
         n_generations=int(generations_n_entry),
-        mutate_mode="swap",
-        crossover_mode="mid",
+        mutate_mode=mutate_var,
+        crossover_mode=crossover_var,
         results_csv="analysis/ga/",
         filename=file
         )
-        frame_subtitle.config(text="Finished execution!")
 
     finally:
         frame_subtitle.config(text="Finished execution!")
@@ -367,17 +379,21 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     output_buffer = StringIO()  # Create a buffer to capture output
     sys.stdout = output_buffer  # Redirect stdout to the buffer
 
+    button_frame = Frame(window)
+    button_frame.pack(side="bottom", anchor="c")  # Align the frame to the top-right corner
+
+    # Back to Algorithm button
+    back_alg_button = Button(button_frame, text="Run again with different parameters", command=lambda: back_to_page(create_hc_insert_params_screen))
+    back_alg_button.pack(padx=30, pady=0)
+
+    # Back to Main Page button
+    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
+    back_button.pack(padx=20, pady=20)
+
     frame_title = Label(window, text="Hill Climbing", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
-
-    button_frame = Frame(window)
-    button_frame.pack(side="top", anchor="e")  # Align the frame to the top-right corner
-
-    # Back to Main Page button
-    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_main_page())
-    back_button.pack(padx=10, pady=0)
 
     scrollbar = Scrollbar(window, orient=VERTICAL)
     scrollbar.pack(side="right", fill="y")  # Pack scrollbar
@@ -470,7 +486,7 @@ def create_sa_insert_params_screen():
     run_button.pack(padx=20, pady=20)
 
     #endregion
-    #region ----- HILL CLIMBING RUNNING SCREEN
+    #region ----- SIMULATED ANNEALING RUNNING SCREEN
 
 def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, cooling_schedule_entry):
     for widget in window.winfo_children():
@@ -483,17 +499,21 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     output_buffer = StringIO()  # Create a buffer to capture output
     sys.stdout = output_buffer  # Redirect stdout to the buffer
 
+    button_frame = Frame(window)
+    button_frame.pack(side="bottom", anchor="c")  # Align the frame to the top-right corner
+
+    # Back to Algorithm button
+    back_alg_button = Button(button_frame, text="Run again with different parameters", command=lambda: back_to_page(create_sa_insert_params_screen))
+    back_alg_button.pack(padx=30, pady=0)
+
+    # Back to Main Page button
+    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_page(create_welcome_screen))
+    back_button.pack(padx=20, pady=20)
+
     frame_title = Label(window, text="Simulated Annealing", font=("Arial", 18))
     frame_title.pack(padx=20, pady=10)
     frame_subtitle = Label(window, text="Running...", font=("Arial", 16))
     frame_subtitle.pack(padx=20, pady=2)
-
-    button_frame = Frame(window)
-    button_frame.pack(side="top", anchor="e")  # Align the frame to the top-right corner
-
-    # Back to Main Page button
-    back_button = Button(button_frame, text="Back to Main Page", command=lambda: back_to_main_page())
-    back_button.pack(padx=10, pady=0)
 
     scrollbar = Scrollbar(window, orient=VERTICAL)
     scrollbar.pack(side="right", fill="y")  # Pack scrollbar
@@ -514,7 +534,7 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
             T=float(temperature_entry),
             cooling_schedule=float(cooling_schedule_entry),
             log=True,
-            results_csv="analysis/hc/",
+            results_csv="analysis/sa/",
             filename=file)
 
     finally:
@@ -528,52 +548,263 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     #endregion
 #endregion    
 #region ----- COMPARE ALGORITHMS SCREEN
+
+def running_algorithms_screen(file,
+                              init_sol_var,
+                              hc_var,
+                              hc_max_iterations_n_entry,
+                              sa_var,
+                              sa_max_iterations_n_entry,
+                              temperature_entry,
+                              cooling_schedule_entry,
+                              ts_var,
+                              tabu_tenure_entry,
+                              neighbours_n_entry,
+                              ts_max_iterations_n_entry,
+                              ga_var,
+                              pop_size_entry,
+                              generations_n_entry,
+                              mutate_var,
+                              crossover_var):
+    for widget in window.winfo_children():
+        widget.destroy()
+
+    frame_title = Label(window, text="Book Scanning Optimization", font=("Arial", 18))
+    frame_title.pack(padx=20, pady=10)
+    frame_subtitle = Label(window, text="Comparing Algorithms...", font=("Arial", 16))
+    frame_subtitle.pack(padx=20, pady=2)
+    
+    #region Run Selected Algorithms
+    filename = file
+    file_reader = FileReader()
+
+    # Common inputs
+    total_books, libraries, total_days = file_reader.read(f"data/{filename}")
+    initial_solution = Solver(total_books, libraries, total_days).create_initial_solution(mode=init_sol_var)
+    uuid = uuid4()
+    
+    if hc_var == 1:
+        hc = HillClimbingSolver(total_books, deepcopy(libraries), total_days)
+        num_iterations = hc_max_iterations_n_entry
+        hc.solve(
+            initial_solution=deepcopy(initial_solution),
+            num_iterations=int(num_iterations),
+            results_csv='analysis/hc/',
+            filename=file,
+            log=True)
+    
+    if sa_var == 1:  
+        sa = SimulatedAnnealing(total_books, deepcopy(libraries), total_days)
+        sa.solve(
+            initial_solution=deepcopy(initial_solution),
+            num_iterations=int(sa_max_iterations_n_entry),
+            T=float(temperature_entry),
+            cooling_schedule=float(cooling_schedule_entry),
+            log=True,
+            results_csv="analysis/sa/",
+            filename=file)
+
+    if ts_var == 1:
+        ts = TabuSearchSolver(total_books, deepcopy(libraries), total_days)
+        ts.solve(
+            initial_solution=deepcopy(initial_solution),
+            tabu_tenure=int(tabu_tenure_entry),
+            n_neighbours=int(neighbours_n_entry),
+            max_iterations=int(ts_max_iterations_n_entry),
+            log=True,
+            results_csv="analysis/ts/",
+            filename=file
+            )
+
+    if ga_var == 1:
+        ga = GeneticAlgorithm(total_books, deepcopy(libraries), total_days)
+        ga.solve(
+            population_size=int(pop_size_entry),
+            n_generations=int(generations_n_entry),
+            mutate_mode=mutate_var,
+            crossover_mode=crossover_var,
+            results_csv="analysis/ga/",
+            filename=file
+        )
+
+        frame_subtitle.config(text="Finished Algorithms Execution!")
+
 def create_compare_screen():
     for widget in window.winfo_children():
         widget.destroy()
-    # Create labels and entry fields for each algorithm's parameters
-    algorithms_params = {"Hill Climbing": [],
-                         "Simulated Annealing": [],
-                         "Tabu Search": [],
-                         "Genetic Algorithm": [],
-                         }
-    algorithms = ["Genetic Algorithm", "Tabu Search", "Hill Climbing", "Simulated Annealing"]
-    parameters = ["Population size", "Number of generations", "Tabu tenure", "Number of neighbours",
-                  "Maximum number of iterations"]
 
-    frames = []  # List to hold the frames for each column
+    frame_title = Label(window, text="Book Scanning Optimization", font=("Arial", 18))
+    frame_title.pack(padx=20, pady=10)
+    frame_subtitle = Label(window, text="Compare Algorithms", font=("Arial", 16))
+    frame_subtitle.pack(padx=20, pady=2)
 
-    # Create frames for each column
-    for _ in range(4):
+    # Create compare button frame
+    button_frame = Frame(window)
+    button_frame.pack(side=BOTTOM, pady=20)
+
+    # Create common parameters frame
+    common_frame = Frame(window)
+    common_frame.pack(side=TOP, pady=20)
+
+    file_label = Label(common_frame, text="Dataset:", font=("Arial", 12))
+    file_label.pack(side=LEFT, padx=20, pady=5)
+    file = StringVar()
+    file.set("a_example.in")
+    file_menu = OptionMenu(common_frame,
+                           file,
+                           "a_example.in",
+                           "a_example_2.in",
+                           "a_example_3.in",
+                           "a_example_4.in",
+                           "b_read_on",
+                           "c_incunabula.in",
+                           "d_tough_choices.in",
+                           "e_so_many_books.in",
+                           "f_libraries_of_the_world")
+    file_menu.pack(side=LEFT)
+
+    init_sol_label = Label(common_frame, text="Initial solution generation mode:",
+                         font=("Arial", 12))
+    init_sol_label.pack(side=LEFT, padx=40, pady=10)
+    init_sol_var = StringVar()
+    init_sol_var.set("Choose mode")
+    init_sol_menu = OptionMenu(common_frame, init_sol_var, "Random", "Greedy")
+    init_sol_menu.pack(side=LEFT)
+
+    frames = []
+    for _ in range(5):
         frame = Frame(window, padx=10, pady=10)
         frame.pack(side=LEFT, padx=10, pady=10, fill=Y)
         frames.append(frame)
 
-    # Add labels and entry fields to each column
-    for i, algorithm in enumerate(algorithms):
-        Label(frames[i], text=algorithm, font=("Arial", 12, "bold")).pack(anchor=NW, padx=5, pady=5)
-        for param in parameters:
-            Label(frames[i], text=param + ":").pack(anchor=NW, padx=5, pady=2)
-            Entry(frames[i]).pack(anchor=NW, padx=5, pady=2)
+    # Compare button
+    compare_button = Button(button_frame,
+                            text="Compare",
+                            command=lambda: running_algorithms_screen(
+                                file.get(),
+                                init_sol_var.get(),
+                                hc_var.get(),
+                                hc_max_iterations_n_entry.get(),
+                                sa_var.get(),
+                                sa_max_iterations_n_entry.get(),
+                                temperature_entry.get(),
+                                cooling_schedule_entry.get(),
+                                ts_var.get(),
+                                tabu_tenure_entry.get(),
+                                neighbours_n_entry.get(),
+                                ts_max_iterations_n_entry.get(),
+                                ga_var.get(),
+                                pop_size_entry.get(),
+                                generations_n_entry.get(),
+                                mutate_var.get(),
+                                crossover_var.get()
+                            ),
+                            font=("Arial", 14))
+    compare_button.pack(padx=20)
 
-    # Create a button to compare the algorithms
-    compare_button = Button(window, text="Compare Algorithms", command=compare_algorithms, font=("Arial", 12))
-    compare_button.pack(padx=20, pady=20)
+    #region HC PARAMS
+    hc_var = IntVar(value=1)  # Initialize as selected
+    hc_check = Checkbutton(frames[1], text="Hill Climbing", variable=hc_var, font=("Arial", 12))
+    hc_check.pack(anchor=NW, padx=5, pady=5)
 
-def compare_algorithms():
-    # Retrieve the parameter values from the entry fields and perform comparison
-    # Implement your comparison logic here
-    print("hello")
-    # ... Add widgets to compare algorithms
+    hc_max_iterations_label = Label(frames[1], text="Maximum number of iterations:", font=("Arial", 10))
+    hc_max_iterations_label.pack(anchor=NW, padx=5, pady=5)
+
+    hc_max_iterations_n_entry = Entry(frames[1])
+    hc_max_iterations_n_entry.pack(anchor=NW, padx=5, pady=5)
+    #endregion
+        
+    #region SA PARAMS
+    sa_var = IntVar(value=1)  # Initialize as selected
+    sa_check = Checkbutton(frames[2], text="Simulated Annealing", variable=sa_var, font=("Arial", 12))
+    sa_check.pack(anchor=NW, padx=5, pady=5)
+    
+    sa_max_iterations_label = Label(frames[2], text="Maximum number of iterations:", font=("Arial", 10))
+    sa_max_iterations_label.pack(anchor=NW, padx=5, pady=5)
+
+    sa_max_iterations_n_entry = Entry(frames[2])
+    sa_max_iterations_n_entry.pack(anchor=NW, padx=5, pady=5)
+
+    temperature_label = Label(frames[2], text="Temperature:", font=("Arial", 10))
+    temperature_label.pack(anchor=NW, padx=5, pady=5)
+
+    temperature_entry = Entry(frames[2])
+    temperature_entry.pack(anchor=NW, padx=5, pady=5)
+    
+    cooling_schedule_label = Label(frames[2], text="Cooling schedule:", font=("Arial", 10))
+    cooling_schedule_label.pack(anchor=NW, padx=5, pady=5)
+
+    cooling_schedule_entry = Entry(frames[2])
+    cooling_schedule_entry.pack(anchor=NW, padx=5, pady=5)
+    #endregion
+
+    #region TS PARAMS
+    ts_var = IntVar(value=1)  # Initialize as selected
+    ts_check = Checkbutton(frames[3], text="Tabu Search", variable=ts_var, font=("Arial", 12))
+    ts_check.pack(anchor=NW, padx=5, pady=5)
+
+    tabu_tenure_label = Label(frames[3], text="Tabu tenure:", font=("Arial", 10))
+    tabu_tenure_label.pack(anchor=NW, padx=15, pady=2)
+
+    tabu_tenure_entry = Entry(frames[3])
+    tabu_tenure_entry.pack(anchor=NW, padx=15, pady=2)
+
+    neighbours_n_label = Label(frames[3], text="Number of neighbours:", font=("Arial", 10))
+    neighbours_n_label.pack(anchor=NW, padx=15, pady=2)
+
+    neighbours_n_entry = Entry(frames[3])
+    neighbours_n_entry.pack(anchor=NW, padx=15, pady=2)
+
+    ts_max_iterations_label = Label(frames[3], text="Maximum number of iterations:", font=("Arial", 10))
+    ts_max_iterations_label.pack(anchor=NW, padx=15, pady=2)
+
+    ts_max_iterations_n_entry = Entry(frames[3])
+    ts_max_iterations_n_entry.pack(anchor=NW, padx=15, pady=2)
+    #endregion
+
+    #region GA PARAMS
+    ga_var = IntVar(value=1)  # Initialize as selected
+    ga_check = Checkbutton(frames[4], text="Genetic Algorithm", variable=ga_var, font=("Arial", 12))
+    ga_check.pack(anchor=NW, padx=15, pady=2)
+
+    pop_size_label = Label(frames[4], text="Population size (min. 4):", font=("Arial", 10))
+    pop_size_label.pack(anchor=NW, padx=15, pady=2)
+
+    pop_size_entry = Entry(frames[4])
+    pop_size_entry.pack(anchor=NW, padx=15, pady=2)
+
+    generations_n_label = Label(frames[4], text="Number of generations:", font=("Arial", 10))
+    generations_n_label.pack(anchor=NW, padx=15, pady=2)
+
+    generations_n_entry = Entry(frames[4])
+    generations_n_entry.pack(anchor=NW, padx=15, pady=2)
+
+    mutate_mode_label = Label(frames[4], text="Mutation mode:", font=("Arial", 10))
+    mutate_mode_label.pack(anchor=NW, padx=15, pady=2)
+    
+    mutate_var = StringVar()
+    mutate_var.set("Choose mode")
+    mutate_menu = OptionMenu(frames[4], mutate_var, "Swap", "Deletion", "Addition")
+    mutate_menu.pack(anchor=NW, padx=15, pady=2)
+
+    crossover_mode_label = Label(frames[4], text="Crossover mode:", font=("Arial", 10))
+    crossover_mode_label.pack(anchor=NW, padx=15, pady=2)
+
+    crossover_var = StringVar()
+    crossover_var.set("Choose mode")
+    crossover_menu = OptionMenu(frames[4], crossover_var, "Mid point", "Random point")
+    crossover_menu.pack(anchor=NW, padx=15, pady=2)
+    #endregion
+
 
 #endregion
 #region ----- Others:Utils button functions
 def run_thread(function):
     threading.Thread(target=function).start()
 
-def back_to_main_page():
+def back_to_page(function):
     for widget in window.winfo_children():
         widget.destroy()
-    create_welcome_screen()
+    function()
 
 #endregion
