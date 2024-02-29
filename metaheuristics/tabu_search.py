@@ -1,11 +1,12 @@
+import time
+import tracemalloc
 from metaheuristics.solver import Solver
 from helpers.solution import Solution
 from copy import deepcopy
 import random
 import numpy as np
 import heapq
-import csv
-import os
+from helpers import utils
 
 class TabuSearchSolver(Solver):
     def __init__(self, total_books: int, libraries: dict, total_days: int):
@@ -157,7 +158,21 @@ class TabuSearchSolver(Solver):
         self.tabu_list[max_from_swap][min_from_swap] += 1                   # update frequency based long term memory
 
 
-    def solve(self, initial_solution: Solution, tabu_tenure: int=7, n_neighbours: int=None, max_iterations: int=1000, log: bool=False, filename: str=None):
+    def solve(self,
+              initial_solution: Solution,
+              tabu_tenure: int=7,
+              n_neighbours: int=None,
+              max_iterations: int=1000,
+              log: bool=False,
+              results_csv: str=None,
+              solution_id: str=None,
+              filename: str=None
+              ):
+        
+        start_time = time.time()
+        tracemalloc.start()
+        tracemalloc.clear_traces()
+        
         best_solution = deepcopy(initial_solution)
         best_score = initial_solution.evaluate()
         curr_solution = deepcopy(initial_solution)
@@ -191,52 +206,16 @@ class TabuSearchSolver(Solver):
             
             if not candidate_list:
                 break
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        _, peak_memory = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        if results_csv and filename:
+            utils.results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, best_score, elapsed_time, peak_memory, tabu_tenure, n_neighbours, max_iterations)
+            print(f"Result written to {results_csv}.")
+
+        print(f"-----\nElapsed time: {elapsed_time} seconds\nPeak memory: {peak_memory} bytes")
         
         return best_solution
-    
-
-    def save_metrics(self, file_name_instance, initial_solution_score, initial_time, initial_memory, initial_type,
-                            tabu_solution_score, tabu_time, tabu_memory,
-                            tabu_tenure, n_neighbours_per_iteration, max_iterations):
-        
-        file_name = "analysis/ts/metrics.csv"
-        # Create or append to the CSV file
-        with open(file_name, mode='a+' if os.path.exists(file_name) else 'w+', newline='') as file:
-            writer = csv.writer(file)
-            if file.tell() == 0:  # If file is empty, write header
-                writer.writerow(["ID", "File Instance", "Initial Score", "Initial Time", "Initial Memory", "Initial Type",
-                                "Tabu Score", "Tabu Time", "Tabu Memory",
-                                "Tabu Tenure", "Candidate List Size", "Max Iterations"])
-
-            file.seek(0)
-            rows = file.readlines()
-
-            if len(rows) > 1:  # Check if there is more than just the header row
-                last_row = rows[-1]
-                last_row = int(last_row[0]) + 1
-            else: 
-                last_row = 1
-
-            # Write the results to the CSV file
-            writer.writerow([last_row, file_name_instance, initial_solution_score, initial_time, initial_memory, initial_type,
-                            tabu_solution_score, tabu_time, tabu_memory,
-                            tabu_tenure, n_neighbours_per_iteration, max_iterations])
-            
-        self.save_history(last_row)
-            
-    
-    def save_history(self, id):
-        # Create or append to the CSV file
-        file_name = "analysis/ts/solutions_history.csv"
-        with open(file_name, mode='a' if os.path.exists(file_name) else 'w', newline='') as file:
-            writer = csv.writer(file)
-            if file.tell() == 0:  # If file is empty, write header
-                writer.writerow(["ID", "Solution History"])
-
-            # Write the solution history to the CSV file
-            for solution_score in self.curr_sol_history:
-                writer.writerow([id, solution_score])          
-
-
-
-

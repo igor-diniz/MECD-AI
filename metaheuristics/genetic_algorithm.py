@@ -14,19 +14,24 @@ class GeneticAlgorithm(Solver):
         self.total_books = total_books
         self.libraries = libraries
         self.total_days = total_days
+        self.curr_sol_history = []
     
     def solve(self, population_size: int,
               n_generations: int,
               mutate_mode: str,
               crossover_mode: str,
               log=False,
-              evolution_log= False,
+              evolution_log=False,
               results_csv=None,
+              solution_id: str=None,
               filename=None):
         
         start_time = time.time()
         tracemalloc.start()
         tracemalloc.clear_traces()
+
+        # Clear current solution history for each call of solve
+        self.curr_sol_history.clear()
 
         print("Generating population...")
 
@@ -65,6 +70,7 @@ class GeneticAlgorithm(Solver):
             
             # Checking the greatest fit among the current population
             greatest_fit = population.get_greatest_fit()
+            self.curr_sol_history.append(greatest_fit.evaluate())
             if fittest.__lt__(greatest_fit):
                 fittest = greatest_fit
                 best_score = greatest_fit.evaluate()
@@ -91,8 +97,8 @@ class GeneticAlgorithm(Solver):
 
         # Write results to csv, if csv file is provided
         if results_csv and filename:
-            results_to_csv(results_csv, filename, population_size, (n_generations, fittest_generation),
-                                mutate_mode, crossover_mode, best_score, fittest.__str__(), elapsed_time, peak_memory)
+            results_to_csv(results_csv, self.curr_sol_history, solution_id, filename, population_size, (n_generations, fittest_generation),
+                                mutate_mode, crossover_mode, best_score, elapsed_time, peak_memory)
             print(f"Result written to {results_csv}.")
         
         if evolution_log:

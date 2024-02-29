@@ -1,0 +1,10 @@
+ID,File Instance,GA Population Size,GA Generations,GA Mutate Mode,GA Crossover Mode,GA Score,GA Time,GA Memory
+d21c31e7-d5c2-4669-8f1e-a32e373bbd87,data/a_example_2.in,300,"(15, 1)",swap,mid,281,13.471928119659424,3795565
+eae1aa93-4de8-4c52-a900-0bc35109a8d3,data/a_example_2.in,300,"(15, 1)",swap,mid,288,12.112000942230225,3729855
+e003f417-b691-48f6-835d-5c309d6cbdb3,data/a_example_2.in,300,"(15, 1)",swap,mid,259,11.492860078811646,3768949
+08a89cf4-e30e-4a40-8cce-9a41aee017f5,data/a_example_2.in,300,"(15, 1)",swap,mid,248,12.034835577011108,3588723
+1ffad319-ae59-48e1-8ee0-8d316b13e0e8,data/a_example_2.in,300,"(15, 1)",swap,mid,288,9.647197723388672,3767917
+e1eff6d1-23c5-47ff-b36f-917126f66ac9,data/a_example_2.in,300,"(15, 1)",swap,mid,246,15.380224466323853,3696517
+9ff23ac4-2feb-43ee-95b6-8923cdc81682,data/a_example_2.in,300,"(15, 1)",swap,mid,281,10.697481155395508,3788616
+874cd921-2235-446c-88f4-9360f26b50d8,data/a_example_2.in,300,"(15, 1)",swap,mid,281,14.67497968673706,3824247
+c558f49f-62fe-4036-ae6e-3cd8c9765f8b,data/a_example_2.in,300,"(15, 1)",swap,mid,288,7.862776756286621,3826418
