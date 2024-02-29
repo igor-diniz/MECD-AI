@@ -72,7 +72,7 @@ def compare_algorithms(data_df: pd.DataFrame,
 
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(len(metrics), 1, figsize=(8, 8))
-    fig.suptitle(f"Comparison for Different Algorithms\nID={id}\n\n")
+    fig.suptitle(f"Comparison for Different Algorithms\n\n")
 
     id_data = data_df[data_df['ID'] == id]
 
@@ -128,14 +128,13 @@ def plot_solution_history(id: str, algorithm: str, save: bool=True, analysis_fol
                           'Solution History']:
             
             label = f"{column}: {id_df[column].iloc[0]}"
-            handle, = plt.plot([], [], 'o', color='black', label=label)
+            handle, = plt.plot([], [], 'o', color='white', label=label)
             handles.append(handle)
             labels.append(label)
-
     plt.xlabel('Iterations')
     plt.ylabel('Current Solution Score')
     plt.title(f"{id_df['File Instance'].iloc[0]} solution history for {algorithm}")
-    plt.legend(handles, labels, loc='upper right', bbox_to_anchor=(1, 1), title='Legend', fontsize='small')
+    plt.legend(handles, labels, loc='upper right', bbox_to_anchor=(1, 1), fontsize='small', handlelength=0)
 
     if save:
          plt.savefig(f'{analysis_folder}/images/{id}_{algorithm}.png')
