@@ -87,10 +87,10 @@ def solve(file_name):
                              save=True,
                              analysis_folder="analysis")
     
-    #utils.plot_solution_history(uuid4, "hc", save=True, analysis_folder="analysis")
-    #utils.plot_solution_history(uuid4, "sa", save=True, analysis_folder="analysis")
-    #utils.plot_solution_history(uuid4, "ts", save=True, analysis_folder="analysis")
-    #utils.plot_solution_history(uuid4, "ga", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "hc", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "sa", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "ts", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "ga", save=True, analysis_folder="analysis")
 
 
 if __name__ == "__main__":
