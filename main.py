@@ -15,7 +15,7 @@ def solve(file_name):
     total_books, libraries, total_days = file_reader.read(file_name)
 
     parent_solver = Solver(total_books, libraries, total_days)
-    initial_sol_mode = "random"
+    initial_sol_mode = "greedy"
 
     start_time = time.time()
     tracemalloc.start()
@@ -84,8 +84,13 @@ def solve(file_name):
                              initial_score=initial_solution.evaluate(), 
                              initial_time=elapsed_time, 
                              initial_memory=peak_memory,
-                             save=False,
+                             save=True,
                              analysis_folder="analysis")
+    
+    utils.plot_solution_history(uuid4, "hc", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "sa", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "ts", save=True, analysis_folder="analysis")
+    utils.plot_solution_history(uuid4, "ga", save=True, analysis_folder="analysis")
 
 
 if __name__ == "__main__":
