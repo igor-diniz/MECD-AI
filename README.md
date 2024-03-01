@@ -23,4 +23,4 @@ import numpy
 ```
 
 ## User Interface
-To run the interactive interface, run ```main.py```. 
+To run the interactive interface, run ```tk.py```. 
