@@ -24,7 +24,8 @@ class GeneticAlgorithm(Solver):
               evolution_log=False,
               results_csv=None,
               solution_id: str=None,
-              filename=None):
+              filename=None,
+              timeout: int=3600):
         
         start_time = time.time()
         tracemalloc.start()
@@ -49,7 +50,7 @@ class GeneticAlgorithm(Solver):
             generations_log = []
             generations_log.append([individual.evaluate() for individual in population.individuals])
 
-        while(num_iterations > 0):
+        while num_iterations > 0 and time.time() - start_time < timeout:
             generation += 1
             print(f"-----\nWorking on generation {generation}...")
             tournment_winner_sol = population.tournament_select(4)
