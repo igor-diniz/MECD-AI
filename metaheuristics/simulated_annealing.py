@@ -30,9 +30,10 @@ class SimulatedAnnealing(Solver):
             T: float, 
             cooling_schedule: float,
             log=False,
-            results_csv = None,
+            results_csv=None,
             solution_id: str=None,
-            filename = None
+            filename: str=None,
+            timeout: int=3600
             ):
             
             start_time = time.time()
@@ -49,7 +50,7 @@ class SimulatedAnnealing(Solver):
             best_solution = deepcopy(solution)
             best_score = score
 
-            while iteration < num_iterations:
+            while iteration < num_iterations and time.time() - start_time < timeout:
                 temperature *= cooling_schedule
                 iteration += 1
                 neighbor_solution = self.select_neighbor_generator(best_solution)
