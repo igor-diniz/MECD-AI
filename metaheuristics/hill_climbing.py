@@ -26,10 +26,11 @@ class HillClimbingSolver(Solver):
     def solve(
             self, initial_solution,
             num_iterations: int,
-            log = False,
-            results_csv = None,
+            log=False,
+            results_csv=None,
             solution_id: str=None,
-            filename = None
+            filename=None,
+            timeout: int=3600
             ):
         
         start_time = time.time()
@@ -44,7 +45,7 @@ class HillClimbingSolver(Solver):
 
         print(f"Init Solution:  {best_solution}, score: {actual_score}")
         
-        while iteration < num_iterations:
+        while iteration < num_iterations and time.time() - start_time < timeout:
             iteration += 1
             neighbors_solution =  self.select_neighbor_generator(best_solution)
             neighbor_score = self.evaluate_solution(neighbors_solution)
