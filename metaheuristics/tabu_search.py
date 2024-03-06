@@ -167,7 +167,8 @@ class TabuSearchSolver(Solver):
               log: bool=False,
               results_csv: str=None,
               solution_id: str=None,
-              filename: str=None
+              filename: str=None,
+              timeout: int=3600
               ):
         
         start_time = time.time()
@@ -216,6 +217,9 @@ class TabuSearchSolver(Solver):
                     break
             
             if not candidate_list:
+                break
+
+            if time.time() - start_time > timeout:
                 break
 
         end_time = time.time()

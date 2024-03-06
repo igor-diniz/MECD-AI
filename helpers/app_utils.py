@@ -213,7 +213,8 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
         log=True,
         results_csv="analysis/ts/",
         solution_id=id,
-        filename=file
+        filename=file,
+        timeout=3600
         )
 
     finally:
@@ -348,7 +349,8 @@ def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var)
         crossover_mode=crossover_var,
         results_csv="analysis/ga/",
         solution_id=id,
-        filename=file
+        filename=file,
+        timeout=3600
         )
 
     finally:
@@ -470,7 +472,8 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
             results_csv='analysis/hc/',
             filename=file,
             solution_id=id,
-            log=True)
+            log=True,
+            timeout=3600)
 
     finally:
         frame_subtitle.config(text="Finished execution!")
@@ -608,7 +611,8 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
             log=True,
             results_csv="analysis/sa/",
             solution_id=id,
-            filename=file)
+            filename=file,
+            timeout=3600)
 
     finally:
         frame_subtitle.config(text="Finished execution!")
@@ -740,7 +744,8 @@ def running_algorithms_screen(file,
             results_csv='analysis/hc/',
             solution_id=common_uuid,
             filename=file,
-            log=True)
+            log=True,
+            timeout=3600)
     
     if sa_var == 1:  
         sa = SimulatedAnnealing(total_books, deepcopy(libraries), total_days)
@@ -752,7 +757,8 @@ def running_algorithms_screen(file,
             log=True,
             results_csv="analysis/sa/",
             solution_id=common_uuid,
-            filename=file)
+            filename=file,
+            timeout=3600)
 
     if ts_var == 1:
         ts = TabuSearchSolver(total_books, deepcopy(libraries), total_days)
@@ -764,7 +770,8 @@ def running_algorithms_screen(file,
             log=True,
             results_csv="analysis/ts/",
             solution_id=common_uuid,
-            filename=file
+            filename=file,
+            timeout=3600
             )
 
     if ga_var == 1:
@@ -776,7 +783,8 @@ def running_algorithms_screen(file,
             crossover_mode=crossover_var,
             results_csv="analysis/ga/",
             solution_id=common_uuid,
-            filename=file
+            filename=file,
+            timeout=3600
         )
 
     frame_subtitle.config(text="Finished Algorithms Execution!")
