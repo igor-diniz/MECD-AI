@@ -105,10 +105,22 @@ class GeneticAlgorithm(Solver):
         return fittest
     
     def generate_population(self, population_size: int):
-        # Generate population with random individuals
+        # Generate population with random individuals and 5% greedy individuals
         population = []
         copy_solver = deepcopy(self)
-        for i in range(population_size):
+        
+        # Greedy individuals
+        n_greedy = round(population_size*0.5)
+
+        for i in range(n_greedy):
+            copy_solver.clear()
+            copy_solver = GeneticAlgorithm(self.total_books,
+                                           self.libraries,
+                                           self.total_days)
+            individual = copy_solver.create_initial_solution("greedy")
+            population.append(individual)
+
+        for i in range(population_size-n_greedy):
             copy_solver.clear()
             copy_solver = GeneticAlgorithm(self.total_books,
                                            self.libraries,
