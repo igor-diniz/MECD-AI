@@ -38,6 +38,8 @@ class GeneticAlgorithm(Solver):
         # Generate first population (generation 0)
         population = self.generate_population(population_size)
         print(f"Population with {population_size} individuals generated!")
+        print("Initial population:")
+        print(population)
         fittest = population.individuals[0]
         best_score = fittest.evaluate()
         fittest_generation = 0
@@ -105,36 +107,41 @@ class GeneticAlgorithm(Solver):
         return fittest
     
     def generate_population(self, population_size: int):
-        # Generate population with random individuals and 5% greedy individuals
-        population = []
+        # Generate population with 50% random individuals and 50% from greedy individual
+        population = Population(total_books=self.total_books,
+                          libraries=self.libraries,
+                          total_days=self.total_days)
+    
         copy_solver = deepcopy(self)
         
-        # Greedy individuals
+        # Greedy-originated individual
         n_greedy = round(population_size*0.5)
 
-        for i in range(n_greedy):
-            copy_solver.clear()
-            copy_solver = GeneticAlgorithm(self.total_books,
-                                           self.libraries,
+        copy_solver = GeneticAlgorithm(self.total_books,
+                                           deepcopy(self.libraries),
                                            self.total_days)
-            individual = copy_solver.create_initial_solution("greedy")
-            population.append(individual)
+        greedy_individual = copy_solver.create_initial_solution("greedy")
+        population.individuals.append(greedy_individual)
 
+        for i in range(n_greedy-1):
+            individual = population.mutate(deepcopy(greedy_individual), "random")
+            population.individuals.append(individual)
+
+        # Random individuals
         for i in range(population_size-n_greedy):
             copy_solver.clear()
             copy_solver = GeneticAlgorithm(self.total_books,
-                                           self.libraries,
+                                           deepcopy(self.libraries),
                                            self.total_days)
             individual = copy_solver.create_initial_solution("random")
-            population.append(individual)
-        return Population(len(population),
-                          population,
-                          self.total_books,
-                          self.libraries,
-                          self.total_days)
+            population.individuals.append(individual)
+
+        population.size = len(population.individuals)
+
+        return population
 
 class Population(GeneticAlgorithm):
-    def __init__(self, size: int, individuals: list, total_books, libraries, total_days):
+    def __init__(self, size: int=None, individuals: list=[], total_books=None, libraries=None, total_days=None):
         super().__init__(total_books, libraries, total_days)
         self.total_books = total_books
         self.libraries = libraries
