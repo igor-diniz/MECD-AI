@@ -110,11 +110,11 @@ def create_ts_insert_params_screen():
                            "a_example_2.in",
                            "a_example_3.in",
                            "a_example_4.in",
-                           "b_read_on",
+                           "b_read_on.in",
                            "c_incunabula.in",
                            "d_tough_choices.in",
                            "e_so_many_books.in",
-                           "f_libraries_of_the_world")
+                           "f_libraries_of_the_world.in")
     file_menu.pack()
 
     init_sol_label = Label(window, text="Initial solution generation mode",
@@ -248,11 +248,11 @@ def create_ga_insert_params_screen():
                            "a_example_2.in",
                            "a_example_3.in",
                            "a_example_4.in",
-                           "b_read_on",
+                           "b_read_on.in",
                            "c_incunabula.in",
                            "d_tough_choices.in",
                            "e_so_many_books.in",
-                           "f_libraries_of_the_world")
+                           "f_libraries_of_the_world.in")
     file_menu.pack()
 
     pop_size_label = Label(window, text="Population size (min. 4):", font=("Arial", 12))
@@ -272,7 +272,7 @@ def create_ga_insert_params_screen():
     
     mutate_var = StringVar()
     mutate_var.set("Choose mode")
-    mutate_menu = OptionMenu(window, mutate_var, "Swap", "Deletion", "Addition")
+    mutate_menu = OptionMenu(window, mutate_var, "Swap", "Deletion", "Addition", "Random")
     mutate_menu.pack()
 
     crossover_mode_label = Label(window, text="Crossover mode:", font=("Arial", 12))
@@ -384,11 +384,11 @@ def create_hc_insert_params_screen():
                            "a_example_2.in",
                            "a_example_3.in",
                            "a_example_4.in",
-                           "b_read_on",
+                           "b_read_on.in",
                            "c_incunabula.in",
                            "d_tough_choices.in",
                            "e_so_many_books.in",
-                           "f_libraries_of_the_world")
+                           "f_libraries_of_the_world.in")
     file_menu.pack()
 
     init_sol_label = Label(window, text="Initial solution generation mode",
@@ -506,11 +506,11 @@ def create_sa_insert_params_screen():
                            "a_example_2.in",
                            "a_example_3.in",
                            "a_example_4.in",
-                           "b_read_on",
+                           "b_read_on.in",
                            "c_incunabula.in",
                            "d_tough_choices.in",
                            "e_so_many_books.in",
-                           "f_libraries_of_the_world")
+                           "f_libraries_of_the_world.in")
     file_menu.pack()
 
     init_sol_label = Label(window, text="Initial solution generation mode",
@@ -823,11 +823,11 @@ def create_compare_screen():
                            "a_example_2.in",
                            "a_example_3.in",
                            "a_example_4.in",
-                           "b_read_on",
+                           "b_read_on.in",
                            "c_incunabula.in",
                            "d_tough_choices.in",
                            "e_so_many_books.in",
-                           "f_libraries_of_the_world")
+                           "f_libraries_of_the_world.in")
     file_menu.pack(side=LEFT)
 
     init_sol_label = Label(common_frame, text="Initial solution generation mode:",
@@ -952,7 +952,7 @@ def create_compare_screen():
     
     mutate_var = StringVar()
     mutate_var.set("Choose mode")
-    mutate_menu = OptionMenu(frames[4], mutate_var, "Swap", "Deletion", "Addition")
+    mutate_menu = OptionMenu(frames[4], mutate_var, "Swap", "Deletion", "Addition", "Random")
     mutate_menu.pack(anchor=NW, padx=15, pady=2)
 
     crossover_mode_label = Label(frames[4], text="Crossover mode:", font=("Arial", 10))
