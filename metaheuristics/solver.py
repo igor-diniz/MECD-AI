@@ -67,9 +67,10 @@ class Solver:
         copy_solution = deepcopy(solution)
 
         internal_libraries = deepcopy(copy_solution.libraries)
+        internal_libraries_ids = list(map(lambda library: library.id, internal_libraries))
         n_libraries_internal = list(range(0, len(internal_libraries)))
         
-        external_libraries = [library for library in self.libraries.values() if library not in internal_libraries]
+        external_libraries = [library for library in self.libraries.values() if library.id not in internal_libraries_ids]
         n_libraries_external = list(range(0, len(external_libraries)))
 
         index_1 = random.choice(n_libraries_internal)
