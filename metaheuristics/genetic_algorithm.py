@@ -1,6 +1,6 @@
 from metaheuristics.solver import Solver
 from helpers.solution import Solution
-from helpers.utils import results_to_csv
+from helpers.utils import results_to_csv, plot_evolution_log
 from copy import deepcopy
 import numpy as np
 import math
@@ -21,7 +21,7 @@ class GeneticAlgorithm(Solver):
               mutate_mode: str,
               crossover_mode: str,
               log=False,
-              evolution_log=False,
+              evolution_log: bool = False,
               results_csv=None,
               solution_id: str=None,
               filename=None,
@@ -101,7 +101,7 @@ class GeneticAlgorithm(Solver):
                                 mutate_mode, crossover_mode, best_score, elapsed_time, peak_memory)
         
         if evolution_log:
-            print(f"Generations log: {generations_log}")
+            plot_evolution_log(filename, generations_log, save=True, id=solution_id)
         
         return fittest
     
