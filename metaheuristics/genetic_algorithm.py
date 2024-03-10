@@ -106,7 +106,9 @@ class GeneticAlgorithm(Solver):
         return fittest
     
     def generate_population(self, population_size: int):
-        # Generate population with 50% random individuals and 50% from greedy individual
+        """Generates initial population, composed by 50% random individuals and
+        50% greedy-originated individuals."""
+
         population = Population(total_books=self.total_books,
                           libraries=self.libraries,
                           total_days=self.total_days)
@@ -149,6 +151,10 @@ class Population(GeneticAlgorithm):
         self.individuals = individuals
     
     def tournament_select(self, tournament_size: int):
+        """Performs tournament selection. A number of individuals (tournament_size)
+        is selected from the population, and the fittest individual among the chosen
+        wins the tournament"""
+
         # Select best individual among tournament competitors
         individuals = deepcopy(self.individuals)
         best_solution = individuals[0]
@@ -160,13 +166,20 @@ class Population(GeneticAlgorithm):
         return best_solution
     
     def roulette_select(self):
-        # Select individual based on score probability
+        """Performs roulette wheel selection, which selects an individual based on
+        score probability. If an individual has higher score, it is more likely to
+        be chosen in the roulette"""
+
         individuals = deepcopy(self.individuals)
         score_sum = sum([solution.evaluate() for solution in self.individuals])
         selection_probabilities = [solution.evaluate() / score_sum for solution in individuals]
         return individuals[np.random.choice(len(individuals), p=selection_probabilities)]
 
     def cross_over(self, individual_1: Solution, individual_2: Solution, mode: str):
+        """Performs cross-over from two parent individuals. The cross-over modes can be
+        mid- or random point. The mode defines the position on which the crossover will
+        occur"""
+
         if mode.lower() == "mid":
             # Mid point cross-over
             index_1 = math.trunc(len(individual_1.libraries) / 2)
@@ -187,6 +200,9 @@ class Population(GeneticAlgorithm):
         return child_1, child_2
     
     def mutate(self, individual: Solution, mode: str):
+        """Mutates the individual using get_internal_neighbour or 
+        get_external_neighour methods"""
+
         if mode.lower() == "random":
             mode = random.choice(["internal swap", "deletion", "external swap"])
         if mode.lower() == "internal swap":
@@ -198,6 +214,7 @@ class Population(GeneticAlgorithm):
         
 
     def replace_least_fittest(population, offspring):
+        """Replace the least fit individual from population with the offsprings"""
         # Start with first index
         least_fittest_index = 0
 
@@ -210,7 +227,7 @@ class Population(GeneticAlgorithm):
         population.individuals[least_fittest_index] = offspring
 
     def get_greatest_fit(self):
-        # Get fittest individual in population
+        """Get fittest individual from population"""
         best_solution = self.individuals[0]
         best_score = best_solution.evaluate()
         for i in range(1, len(self.individuals)):
