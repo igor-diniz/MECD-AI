@@ -272,7 +272,7 @@ def create_ga_insert_params_screen():
     
     mutate_var = StringVar()
     mutate_var.set("Choose mode")
-    mutate_menu = OptionMenu(window, mutate_var, "Swap", "Deletion", "Addition", "Random")
+    mutate_menu = OptionMenu(window, mutate_var, "Internal Swap", "External Swap", "Deletion", "Random")
     mutate_menu.pack()
 
     crossover_mode_label = Label(window, text="Crossover mode:", font=("Arial", 12))
@@ -952,7 +952,7 @@ def create_compare_screen():
     
     mutate_var = StringVar()
     mutate_var.set("Choose mode")
-    mutate_menu = OptionMenu(frames[4], mutate_var, "Swap", "Deletion", "Addition", "Random")
+    mutate_menu = OptionMenu(frames[4], mutate_var, "Internal Swap", "External Swap", "Deletion", "Random")
     mutate_menu.pack(anchor=NW, padx=15, pady=2)
 
     crossover_mode_label = Label(frames[4], text="Crossover mode:", font=("Arial", 10))

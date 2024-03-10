@@ -39,8 +39,6 @@ class GeneticAlgorithm(Solver):
         # Generate first population (generation 0)
         population = self.generate_population(population_size)
         print(f"Population with {population_size} individuals generated!")
-        print("Initial population:")
-        print(population)
         fittest = population.individuals[0]
         best_score = fittest.evaluate()
         fittest_generation = 0
@@ -190,12 +188,12 @@ class Population(GeneticAlgorithm):
     
     def mutate(self, individual: Solution, mode: str):
         if mode.lower() == "random":
-            mode = random.choice(["swap", "deletion", "addition"])
-        if mode.lower() == "swap":
+            mode = random.choice(["internal swap", "deletion", "external swap"])
+        if mode.lower() == "internal swap":
             return self.get_internal_neighbour(individual, "swap")
         if mode.lower() == "deletion":
             return self.get_internal_neighbour(individual, "deletion")
-        if mode.lower() == "addition":
+        if mode.lower() == "external swap":
             return self.get_external_neighbour(individual)
         
 
