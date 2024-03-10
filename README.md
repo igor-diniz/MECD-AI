@@ -23,4 +23,4 @@ import numpy
 ```
 
 ## User Interface
-To run the interactive interface, run ```app.py```. 
+To run the interactive interface, run the ```app.py``` script. 
