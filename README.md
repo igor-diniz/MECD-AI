@@ -23,4 +23,10 @@ import numpy
 ```
 
 ## User Interface
-To run the interactive interface, run the ```app.py``` script. 
+To run the interactive interface, run the ```app.py``` script.
+
+## Code Changes From Previous Delivery
+- Implemented Frequency Based Long Term Memory for TS.
+- Changed initial solution to be 50% greedy-originated individuals and 50% random individuals in GA.
+- Added a method to save and plot the generation score log to see the population evolution in GA.
+- Corrected the 'if log' structure of SA to print even if the solution is not improved in the current iteration.
