@@ -13,11 +13,14 @@ class TabuSearchSolver(Solver):
         super().__init__(total_books, libraries, total_days)
         n_libraries = len(libraries)
         self.tabu_list = np.zeros((n_libraries, n_libraries), dtype=int)
-        self.mask_tabu = np.triu(np.ones_like(self.tabu_list, dtype=bool), 1)
+        self.mask_tabu = np.triu(np.ones_like(self.tabu_list, dtype=bool), 1)   # upper triangle of tabu list matrix
         self.curr_sol_history = []
 
 
     def append_n_external_neighbours(self, solution: Solution, score_neighbour_swap: heapq, n: int, enable_penalty: bool):
+        """Appends n combinations of neighbours from swaps between external libraries 
+        that are not in the solution and internal libraries that is in the solution"""
+
         neighbourhood_swaps = set()
         n_libraries = len(self.libraries)
         n_sol_libraries = len(solution.libraries)
@@ -53,6 +56,9 @@ class TabuSearchSolver(Solver):
 
     
     def append_n_internal_neighbours(self, solution: Solution, score_neighbour_swap: heapq, n: int, enable_penalty: bool):
+        """Appends n combinations of neighbours from swaps between two internal libraries 
+        that are in the solution, that means n permutations of the libraries in the solution"""
+
         neighbourhood_swaps = set()
         n_sol_libraries = len(solution.libraries)
         n_max_neighbours = n_sol_libraries * (n_sol_libraries - 1)
@@ -85,6 +91,9 @@ class TabuSearchSolver(Solver):
 
 
     def append_all_external_neighbours(self, curr_solution: Solution, score_neighbour_swap: heapq, enable_penalty: bool):
+        """Appends all combinations of neighbours from swaps between external libraries 
+        that are not in the solution and internal libraries that is in the solution"""
+        
         libraries_sol = deepcopy(curr_solution.libraries)
 
         # get libraries not in the current solution
@@ -108,6 +117,9 @@ class TabuSearchSolver(Solver):
     
 
     def append_all_internal_neighbours(self, curr_solution: Solution, score_neighbour_swap: heapq, enable_penalty: bool):
+        """Appends all combinations of neighbours from swaps between two internal libraries 
+        that are in the solution, that means all permutations of the libraries in the solution"""
+        
         libraries_sol = deepcopy(curr_solution.libraries)
 
          # swap libraries in use with libraries also in use
@@ -127,6 +139,9 @@ class TabuSearchSolver(Solver):
     
     
     def get_candidate_list(self, curr_solution: Solution, n: int=None, enable_penalty: bool=False):
+        """Gets the candidate list of neighbours as priority queue ordered by the score.
+        The priority queue is composed by the score, by the solution itself and the swap done"""
+        
         score_neighbour_swap = []   # list of tuples like (diff_score, neighbour_sol, swap_done)
         heapq.heapify(score_neighbour_swap)     # priority queue based on the diff_score
         
@@ -135,23 +150,27 @@ class TabuSearchSolver(Solver):
             self.append_all_internal_neighbours(curr_solution, score_neighbour_swap, enable_penalty)
 
         else:
-            self.append_n_external_neighbours(curr_solution, score_neighbour_swap, n//2, enable_penalty)
-            self.append_n_internal_neighbours(curr_solution, score_neighbour_swap, n//2, enable_penalty)
+            self.append_n_external_neighbours(curr_solution, score_neighbour_swap, int(n*0.7), enable_penalty)
+            self.append_n_internal_neighbours(curr_solution, score_neighbour_swap, int(n*0.3), enable_penalty)
 
         return score_neighbour_swap
     
 
-    def acceptance_criterion_met(self, best_score, new_score):
+    def aspiration_criterion_met(self, best_score, new_score):
+        """Verifies if the new score from the neighbour is the best reached so far"""
         return best_score < new_score
     
     
     def is_swap_tabu(self, swaped_libs):
+        """Verifies if the swap is tabu in the tabu list"""
         min_from_swap = min(swaped_libs)
         max_from_swap = max(swaped_libs)
         return self.tabu_list[min_from_swap][max_from_swap] > 0
     
 
     def update_tabu_list(self, swaped_libs, tabu_tenure):
+        """Sets the tabu tenure for the new swap 
+        and updates the long term memory"""
         min_from_swap = min(swaped_libs)
         max_from_swap = max(swaped_libs)
         self.tabu_list[self.mask_tabu & (self.tabu_list != 0)] -= 1         # update tabu frequency of previous swaps
@@ -184,24 +203,28 @@ class TabuSearchSolver(Solver):
         self.curr_sol_history.clear()
         self.curr_sol_history.append(best_score)
         
+        # number of iterations is one of the stop criterions
         for _ in range(max_iterations):
+
+            # enables the usage of the long term memory
             if same_best_sol_times > tabu_tenure:
                 enable_penalty = True
 
             candidate_list = self.get_candidate_list(curr_solution, n_neighbours, enable_penalty)
 
-
+            # gets the best neighbour that is not a tabu
             while candidate_list:
                 negative_score, best_neighbour, swaped_libs = heapq.heappop(candidate_list)     # get the best neighbour using the heap sctructure
                 penalty = self.tabu_list[max(swaped_libs)][min(swaped_libs)] if enable_penalty else 0
                 new_score = -(negative_score - penalty)
 
-                # if not a tabu or acceptance criterion met
-                if self.acceptance_criterion_met(best_score, new_score) or not self.is_swap_tabu(swaped_libs):
+                # if not a tabu or aspiration criterion met
+                if self.aspiration_criterion_met(best_score, new_score) or not self.is_swap_tabu(swaped_libs):
                     curr_solution = best_neighbour
                     self.curr_sol_history.append(new_score)
                     
-                    if self.acceptance_criterion_met(best_score, new_score):
+                    # updates best solution found so far
+                    if self.aspiration_criterion_met(best_score, new_score):
                         best_solution = deepcopy(curr_solution)
                         best_score = new_score
                         same_best_sol_times = 0
@@ -216,9 +239,11 @@ class TabuSearchSolver(Solver):
                         print("\nBest Solution So Far:\n", best_solution)
                     break
             
+            # all neighbours are tabu, so stop
             if not candidate_list:
                 break
-
+            
+            # timeout reached, stop
             if time.time() - start_time > timeout:
                 break
 
