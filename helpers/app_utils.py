@@ -255,7 +255,7 @@ def create_ga_insert_params_screen():
                            "f_libraries_of_the_world.in")
     file_menu.pack()
 
-    pop_size_label = Label(window, text="Population size (min. 4):", font=("Arial", 12))
+    pop_size_label = Label(window, text="Population size (min. 10):", font=("Arial", 12))
     pop_size_label.pack(padx=20, pady=10)
 
     pop_size_entry = Entry(window)
@@ -935,7 +935,7 @@ def create_compare_screen():
     ga_check = Checkbutton(frames[4], text="Genetic Algorithm", variable=ga_var, font=("Arial", 12))
     ga_check.pack(anchor=NW, padx=15, pady=2)
 
-    pop_size_label = Label(frames[4], text="Population size (min. 4):", font=("Arial", 10))
+    pop_size_label = Label(frames[4], text="Population size (min. 10):", font=("Arial", 10))
     pop_size_label.pack(anchor=NW, padx=15, pady=2)
 
     pop_size_entry = Entry(frames[4])
