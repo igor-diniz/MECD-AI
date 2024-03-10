@@ -204,17 +204,20 @@ def run_ts(file, init_sol_var, tabu_tenure_entry, neighbours_n_entry, max_iterat
     ts = TabuSearchSolver(total_books, libraries, total_days)
     initial_solution = ts.create_initial_solution(mode=init_sol_var)
         
-    try: 
-        ts.solve(
-        initial_solution=initial_solution,
-        tabu_tenure=int(tabu_tenure_entry),
-        n_neighbours=int(neighbours_n_entry),
-        max_iterations=int(max_iterations_n_entry),
-        log=True,
-        results_csv="analysis/ts/",
-        solution_id=id,
-        filename=file,
-        timeout=3600
+    try:
+        window.after(
+            1000,
+            ts.solve(
+            initial_solution=initial_solution,
+            tabu_tenure=int(tabu_tenure_entry),
+            n_neighbours=int(neighbours_n_entry),
+            max_iterations=int(max_iterations_n_entry),
+            log=True,
+            results_csv="analysis/ts/",
+            solution_id=id,
+            filename=file,
+            timeout=3600
+            )
         )
 
     finally:
@@ -342,15 +345,18 @@ def run_ga(file, pop_size_entry, generations_n_entry, mutate_var, crossover_var)
     ga = GeneticAlgorithm(total_books, libraries, total_days)
     
     try: 
-        ga.solve(
-        population_size=int(pop_size_entry),
-        n_generations=int(generations_n_entry),
-        mutate_mode=mutate_var,
-        crossover_mode=crossover_var,
-        results_csv="analysis/ga/",
-        solution_id=id,
-        filename=file,
-        timeout=3600
+        window.after(
+            1000,
+            ga.solve(
+            population_size=int(pop_size_entry),
+            n_generations=int(generations_n_entry),
+            mutate_mode=mutate_var,
+            crossover_mode=crossover_var,
+            results_csv="analysis/ga/",
+            solution_id=id,
+            filename=file,
+            timeout=3600
+            )
         )
 
     finally:
@@ -466,14 +472,17 @@ def run_hc(file, init_sol_var, max_iterations_n_entry):
     initial_solution = hc.create_initial_solution(mode=init_sol_var)
     
     try: 
-        hc.solve(
-            initial_solution=initial_solution,
-            num_iterations=int(max_iterations_n_entry),
-            results_csv='analysis/hc/',
-            filename=file,
-            solution_id=id,
-            log=True,
-            timeout=3600)
+        window.after(
+            1000,
+            hc.solve(
+                initial_solution=initial_solution,
+                num_iterations=int(max_iterations_n_entry),
+                results_csv='analysis/hc/',
+                filename=file,
+                solution_id=id,
+                log=True,
+                timeout=3600)
+        )
 
     finally:
         frame_subtitle.config(text="Finished execution!")
@@ -603,17 +612,20 @@ def run_sa(file, init_sol_var, max_iterations_n_entry, temperature_entry, coolin
     initial_solution = sa.create_initial_solution(mode=init_sol_var)
     
     try:
-        sa.solve(
-            initial_solution=initial_solution,
-            num_iterations=int(max_iterations_n_entry),
-            T=float(temperature_entry),
-            cooling_schedule=float(cooling_schedule_entry),
-            log=True,
-            results_csv="analysis/sa/",
-            solution_id=id,
-            filename=file,
-            timeout=3600)
-
+        window.after(
+            1000,
+            sa.solve(
+                initial_solution=initial_solution,
+                num_iterations=int(max_iterations_n_entry),
+                T=float(temperature_entry),
+                cooling_schedule=float(cooling_schedule_entry),
+                log=True,
+                results_csv="analysis/sa/",
+                solution_id=id,
+                filename=file,
+                timeout=3600)
+        )
+        
     finally:
         frame_subtitle.config(text="Finished execution!")
         sys.stdout = original_stdout  # Restore original stdout
