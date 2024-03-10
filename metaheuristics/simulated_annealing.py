@@ -61,14 +61,16 @@ class SimulatedAnnealing(Solver):
                 if delta > 0 or np.exp(-delta / temperature) > random.random():
                     solution = neighbor_solution
                     score = neighbor_score
-                    self.curr_sol_history.append(score)
 
                     if score > best_score:
                         best_solution = deepcopy(solution)
                         best_score = score
-                        if log:
-                            print("\nBest Neighbour Selected:\n", neighbor_solution)
-                            print("\nBest Solution So Far:\n", best_solution)
+
+                    if log:
+                        print("\nBest Neighbour Selected:\n", neighbor_solution)
+                        print("\nBest Solution So Far:\n", best_solution)
+
+                self.curr_sol_history.append(score)
 
             end_time = time.time()
             elapsed_time = end_time - start_time

@@ -13,6 +13,8 @@ import time
 import tracemalloc
 from copy import deepcopy
 from uuid import uuid4
+import warnings
+warnings.filterwarnings('ignore')
 
 window = Tk()
 window.geometry("1100x550")

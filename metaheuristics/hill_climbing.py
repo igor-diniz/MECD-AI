@@ -54,9 +54,9 @@ class HillClimbingSolver(Solver):
                 best_solution = neighbors_solution
                 actual_score = neighbor_score
 
-                if log: 
-                    print("\nBest Neighbour Selected:\n", neighbors_solution)
-                    print("\nBest Solution So Far:\n", best_solution)
+            if log: 
+                print("\nBest Neighbour Selected:\n", neighbors_solution)
+                print("\nBest Solution So Far:\n", best_solution)
             
             self.curr_sol_history.append(actual_score)
             
