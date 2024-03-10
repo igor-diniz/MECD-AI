@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 def results_to_csv(csv_path: str, curr_solution_history: list,
                     *columns):
@@ -40,6 +41,41 @@ def grid_search_ga(function, parameters: dict, filename):
         for crossover_mode in crossover_modes:
             function(filename, population_size, n_generations, mutate_mode, crossover_mode)
 
+def plot_evolution_log(filename: str, evolution_log, save: bool=False, id=None):
+    # Plot 10 generations
+    evolution_log = np.array(evolution_log)
+    stride = len(evolution_log) // 10
+    print(stride)
+    indices = np.round(np.linspace(0, len(evolution_log) - 1, 10)).astype(int)
+
+    title = f"Population evoluion: {filename}"
+    fig_rows = 2
+    fig_cols = 5
+    print(indices)
+    subplots_indexes = []
+    for i in range(fig_rows):
+        for j in range(fig_cols):    
+            subplots_indexes.append((i, j))
+
+    fig, axs = plt.subplots(nrows=fig_rows, ncols=fig_cols, sharex=True, sharey=True, figsize=(12, 7))
+
+    for generation, (i, j) in zip(indices, subplots_indexes):
+        x = [individual for individual in range(1, len(evolution_log[generation])+1)]
+        y = evolution_log[generation]
+        axs[i, j].plot(x, y, '-ok', markersize=3)
+        axs[i, j].set_title(f"Gen {generation}")
+
+    fig.text(0.5, 0.04, 'Individuals', ha='center')
+    fig.text(0.04, 0.5, 'Scores', va='center', rotation='vertical')
+    fig.text(0.5, 0.95, title, ha='center', size=14)
+
+    plt.subplots_adjust(left=0.08,
+                    bottom=0.1,  
+                        top=0.89,
+                        wspace=0.1,
+                        hspace=0.2)
+    if save:
+         plt.savefig(f'analysis/ga/evolution_log/{filename}_{id}.png')
 
 def merge_metrics_dataframes(analysis_folder):
     # Initialize an empty DataFrame to store merged metrics
