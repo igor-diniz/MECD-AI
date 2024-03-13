@@ -1,7 +1,6 @@
-from helpers.app_utils import *
+from ui.components.front import App
 
-# Create the starting screen
-create_welcome_screen()
-
-# Run the main loop
-window.mainloop()
+if __name__ == "__main__":
+    root = App()
+    root.homepage()
+    root.mainloop()
