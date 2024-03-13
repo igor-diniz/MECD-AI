@@ -14,6 +14,7 @@ HOMEPAGE_TEXT = "What would you like to do?"
 BUTTON_HOMEPAGE_INDIV_ALGORITHM_TEXT = "Solve problem with a chosen optimization algorithm"
 BUTTON_HOMEPAGE_COMPARE_TEXT = "Compare algorithms performances"
 
+COMPARE_TEXT = "Compare!"
 SELECT_ONE_ALGORITHM_TEXT = "Alright! Select one of the algorithms below."
 
 BUTTON_RUN_AGAIN = "Run again with different parameters"
